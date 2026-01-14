@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rhythm Hero</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+      overflow-x: hidden;
+    }
+    
+    /* Use GPU acceleration for animations */
+    .animate-pulse-slow,
+    .animate-slide-in,
+    .animate-glow,
+    .animate-shake,
+    .animate-float,
+    .particle,
+    .note-enter,
+    .hit-burst,
+    .perfect-ring,
+    .star-burst {
+      will-change: transform;
+      transform: translateZ(0);
+      backface-visibility: hidden;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1) translateZ(0); }
+      50% { transform: scale(1.05) translateZ(0); }
+    }
+    
+    @keyframes slideIn {
+      from { transform: translateY(-20px) translateZ(0); opacity: 0; }
+      to { transform: translateY(0) translateZ(0); opacity: 1; }
+    }
+    
+    @keyframes glow {
+      0%, 100% { box-shadow: 0 0 20px var(--glow-color); }
+      50% { box-shadow: 0 0 40px var(--glow-color); }
+    }
+    
+    @keyframes particleFade {
+      0% { transform: translate(0, 0) scale(1) translateZ(0); opacity: 1; }
+      100% { transform: translate(var(--tx), var(--ty)) scale(0) translateZ(0); opacity: 0; }
+    }
+    
+    @keyframes shake {
+      0%, 100% { transform: translateX(0) translateZ(0); }
+      25% { transform: translateX(-5px) translateZ(0); }
+      75% { transform: translateX(5px) translateZ(0); }
+    }
+    
+    @keyframes noteSlide {
+      from { transform: translateY(-20px) scale(0.8) translateZ(0); opacity: 0; }
+      to { transform: translateY(0) scale(1) translateZ(0); opacity: 1; }
+    }
+    
+    @keyframes hitBurst {
+      0% { transform: scale(1) translateZ(0); opacity: 1; }
+      100% { transform: scale(2.5) translateZ(0); opacity: 0; }
+    }
+    
+    @keyframes comboGlow {
+      0% { text-shadow: 0 0 10px currentColor; }
+      50% { text-shadow: 0 0 30px currentColor, 0 0 40px currentColor; }
+      100% { text-shadow: 0 0 10px currentColor; }
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) translateZ(0); }
+      50% { transform: translateY(-20px) translateZ(0); }
+    }
+    
+    @keyframes perfectRing {
+      0% { transform: scale(0.5) translateZ(0); opacity: 1; }
+      100% { transform: scale(2) translateZ(0); opacity: 0; }
+    }
+    
+    @keyframes starBurst {
+      0% { transform: scale(0) rotate(0deg) translateZ(0); opacity: 1; }
+      100% { transform: scale(1.5) rotate(180deg) translateZ(0); opacity: 0; }
+    }
+    
+    .animate-pulse-slow {
+      animation: pulse 2s ease-in-out infinite;
+    }
+    
+    .animate-slide-in {
+      animation: slideIn 0.3s ease-out;
+    }
+    
+    .animate-glow {
+      animation: glow 2s ease-in-out infinite;
+    }
+    
+    .animate-shake {
+      animation: shake 0.3s ease-in-out;
+    }
+    
+    .animate-float {
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    .particle {
+      animation: particleFade 0.6s ease-out forwards;
+    }
+    
+    .note-enter {
+      animation: noteSlide 0.2s ease-out;
+    }
+    
+    .hit-burst {
+      animation: hitBurst 0.5s ease-out forwards;
+    }
+    
+    .perfect-ring {
+      animation: perfectRing 0.6s ease-out forwards;
+    }
+    
+    .star-burst {
+      animation: starBurst 0.8s ease-out forwards;
+    }
+    
+    .hit-flash {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, transparent 70%);
+      pointer-events: none;
+      animation: fadeOut 0.3s ease-out forwards;
+    }
+    
+    @keyframes fadeOut {
+      to { opacity: 0; }
+    }
+    
+    .combo-bounce {
+      animation: comboBounce 0.3s ease-out, comboGlow 0.5s ease-in-out;
+    }
+    
+    @keyframes comboBounce {
+      0% { transform: scale(0.8) translateZ(0); }
+      50% { transform: scale(1.2) translateZ(0); }
+      100% { transform: scale(1) translateZ(0); }
+    }
+    
+    .progress-bar {
+      transition: width 0.1s linear;
+    }
+    
+    .genre-card {
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .genre-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+      transform: rotate(45deg);
+      transition: all 0.5s;
+    }
+    
+    .genre-card:hover::before {
+      left: 100%;
+    }
+    
+    .genre-card:hover {
+      transform: translateY(-10px) scale(1.05) translateZ(0);
+    }
+    
+    .lane-glow {
+      box-shadow: 0 0 30px currentColor;
+    }
+    
+    .trail {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, transparent 0%, var(--trail-color) 50%, transparent 100%);
+      opacity: 0.3;
+      pointer-events: none;
+    }
+    
+    /* Simplified background pattern - less intensive */
+    .bg-pattern {
+      position: absolute;
+      inset: 0;
+      opacity: 0.03;
+      background-size: 20px 20px;
+      background-image: linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+                        linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
+      pointer-events: none;
+    }
+    
+    .glass-effect {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .note-shadow {
+      filter: drop-shadow(0 0 10px currentColor);
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <script type="text/babel">
+    const { useState, useRef, useEffect } = React;
+
+    // Genre themes configuration
+    const GENRE_THEMES = {
+      pop: {
+        name: 'Pop',
+        emoji: '💖',
+        description: 'Bright & Catchy',
+        bg: 'from-pink-900 via-purple-900 to-black',
+        primary: 'from-pink-500 to-purple-600',
+        secondary: 'from-pink-500 to-purple-500',
+        accent: 'pink-500',
+        glow: 'rgba(236, 72, 153, 0.5)',
+        noteGradient: 'from-pink-400 to-purple-500',
+        hitZone: 'from-pink-500 to-purple-500',
+        textGradient: 'from-pink-400 to-purple-500',
+        borderColor: 'border-pink-500',
+        trailColor: 'rgba(236, 72, 153, 0.3)'
+      },
+      rock: {
+        name: 'Rock',
+        emoji: '🎸',
+        description: 'Classic & Powerful',
+        bg: 'from-orange-900 via-red-950 to-black',
+        primary: 'from-orange-600 to-red-600',
+        secondary: 'from-orange-500 to-red-500',
+        accent: 'orange-500',
+        glow: 'rgba(249, 115, 22, 0.5)',
+        noteGradient: 'from-orange-500 to-red-600',
+        hitZone: 'from-orange-500 to-red-500',
+        textGradient: 'from-orange-400 to-red-500',
+        borderColor: 'border-orange-500',
+        trailColor: 'rgba(249, 115, 22, 0.3)'
+      },
+      heavy: {
+        name: 'Heavy',
+        emoji: '💀',
+        description: 'Brutal & Aggressive',
+        bg: 'from-gray-900 via-red-950 to-black',
+        primary: 'from-red-700 to-black',
+        secondary: 'from-red-600 to-gray-900',
+        accent: 'red-600',
+        glow: 'rgba(220, 38, 38, 0.5)',
+        noteGradient: 'from-red-600 to-black',
+        hitZone: 'from-red-600 to-red-800',
+        textGradient: 'from-red-500 to-gray-400',
+        borderColor: 'border-red-600',
+        trailColor: 'rgba(220, 38, 38, 0.3)'
+      },
+      electronic: {
+        name: 'Electronic',
+        emoji: '⚡',
+        description: 'Energetic & Vibrant',
+        bg: 'from-purple-900 via-blue-900 to-black',
+        primary: 'from-cyan-500 to-blue-600',
+        secondary: 'from-purple-500 to-cyan-500',
+        accent: 'cyan-400',
+        glow: 'rgba(34, 211, 238, 0.5)',
+        noteGradient: 'from-cyan-400 to-blue-500',
+        hitZone: 'from-cyan-500 to-blue-500',
+        textGradient: 'from-cyan-400 to-blue-500',
+        borderColor: 'border-cyan-400',
+        trailColor: 'rgba(34, 211, 238, 0.3)'
+      }
+    };
+
+    const RhythmGame = () => {
+      const [selectedGenre, setSelectedGenre] = useState(null);
+      const [audioFile, setAudioFile] = useState(null);
+      const [isAnalyzing, setIsAnalyzing] = useState(false);
+      const [isPlaying, setIsPlaying] = useState(false);
+      const [songData, setSongData] = useState(null);
+      const [notes, setNotes] = useState([]);
+      const [score, setScore] = useState(0);
+      const [combo, setCombo] = useState(0);
+      const [maxCombo, setMaxCombo] = useState(0);
+      const [currentTime, setCurrentTime] = useState(0);
+      const [hitFeedback, setHitFeedback] = useState({});
+      const [particles, setParticles] = useState([]);
+      const [hitBursts, setHitBursts] = useState([]);
+      const [stats, setStats] = useState({ perfect: 0, good: 0, ok: 0, miss: 0 });
+      const [difficulty, setDifficulty] = useState('medium');
+      const [beatFlash, setBeatFlash] = useState(false);
+      const [perfectRings, setPerfectRings] = useState([]);
+      const [starBursts, setStarBursts] = useState([]);
+      
+      const audioRef = useRef(null);
+      const audioContextRef = useRef(null);
+      const animationFrameRef = useRef(null);
+      const startTimeRef = useRef(null);
+
+      const LANES = ['left', 'down', 'up', 'right'];
+      const LANE_KEYS = { ArrowLeft: 'left', ArrowDown: 'down', ArrowUp: 'up', ArrowRight: 'right' };
+      const HIT_WINDOW = 0.2;
+      const NOTE_SPEED = 2;
+      const AUDIO_OFFSET = 0.0;
+
+      const theme = selectedGenre ? GENRE_THEMES[selectedGenre] : GENRE_THEMES.pop;
+
+      const analyzeAudio = async (file) => {
+        setIsAnalyzing(true);
+        
+        try {
+          const arrayBuffer = await file.arrayBuffer();
+          const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          audioContextRef.current = audioContext;
+          
+          const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+          const channelData = audioBuffer.getChannelData(0);
+          const sampleRate = audioBuffer.sampleRate;
+          const duration = audioBuffer.duration;
+          
+          // Improved beat detection with better consistency
+          const beats = detectBeatsImproved(channelData, sampleRate);
+          const generatedNotes = generateNotePattern(beats, duration);
+          
+          setSongData({
+            duration,
+            bpm: estimateBPM(beats),
+            title: file.name.replace(/\.[^/.]+$/, ""),
+            beatCount: beats.length
+          });
+          
+          setNotes(generatedNotes);
+          
+          const audio = new Audio();
+          audio.src = URL.createObjectURL(file);
+          audio.preload = 'auto';
+          audio.volume = 1.0;
+          audioRef.current = audio;
+          
+        } catch (error) {
+          console.error('Analysis error:', error);
+          alert('Failed to analyze audio. Please try another file.');
+        } finally {
+          setIsAnalyzing(false);
+        }
+      };
+
+      // Significantly improved beat detection with multiple methods
+      const detectBeatsImproved = (channelData, sampleRate) => {
+        const beats = [];
+        
+        // Method 1: Energy-based detection with smoothing
+        const windowSize = Math.floor(sampleRate * 0.043); // ~43ms window (good for most music)
+        const hopSize = Math.floor(windowSize / 8);
+        
+        // Calculate energy envelope
+        const energies = [];
+        for (let i = 0; i < channelData.length - windowSize; i += hopSize) {
+          let energy = 0;
+          for (let j = 0; j < windowSize; j++) {
+            const sample = channelData[i + j];
+            energy += sample * sample; // RMS energy
+          }
+          energies.push({ 
+            time: i / sampleRate, 
+            energy: Math.sqrt(energy / windowSize)
+          });
+        }
+        
+        // Apply smoothing to reduce noise
+        const smoothed = [];
+        const smoothWindow = 5;
+        for (let i = smoothWindow; i < energies.length - smoothWindow; i++) {
+          let sum = 0;
+          for (let j = -smoothWindow; j <= smoothWindow; j++) {
+            sum += energies[i + j].energy;
+          }
+          smoothed.push({
+            time: energies[i].time,
+            energy: sum / (smoothWindow * 2 + 1)
+          });
+        }
+        
+        // Calculate derivative (change in energy)
+        const derivatives = [];
+        for (let i = 1; i < smoothed.length; i++) {
+          derivatives.push({
+            time: smoothed[i].time,
+            derivative: smoothed[i].energy - smoothed[i - 1].energy
+          });
+        }
+        
+        // Find peaks in derivative (sudden increases in energy = beats)
+        const sorted = [...derivatives].sort((a, b) => b.derivative - a.derivative);
+        const threshold = sorted[Math.floor(sorted.length * 0.15)]?.derivative || 0;
+        
+        let lastBeat = -1;
+        const minInterval = 0.15; // Minimum 150ms between beats
+        
+        for (let i = 10; i < derivatives.length - 10; i++) {
+          const current = derivatives[i];
+          
+          if (current.derivative > threshold && current.derivative > 0) {
+            // Check if it's a local maximum
+            let isLocalMax = true;
+            for (let j = -5; j <= 5; j++) {
+              if (j !== 0 && derivatives[i + j]?.derivative > current.derivative) {
+                isLocalMax = false;
+                break;
+              }
+            }
+            
+            if (isLocalMax && (current.time - lastBeat) >= minInterval) {
+              beats.push(current.time);
+              lastBeat = current.time;
+            }
+          }
+        }
+        
+        // If we didn't find many beats, try a more aggressive approach
+        if (beats.length < 50) {
+          console.log('Retrying with lower threshold...');
+          const lowerThreshold = sorted[Math.floor(sorted.length * 0.25)]?.derivative || 0;
+          beats.length = 0;
+          lastBeat = -1;
+          
+          for (let i = 10; i < derivatives.length - 10; i++) {
+            const current = derivatives[i];
+            
+            if (current.derivative > lowerThreshold && current.derivative > 0) {
+              let isLocalMax = true;
+              for (let j = -3; j <= 3; j++) {
+                if (j !== 0 && derivatives[i + j]?.derivative > current.derivative) {
+                  isLocalMax = false;
+                  break;
+                }
+              }
+              
+              if (isLocalMax && (current.time - lastBeat) >= minInterval) {
+                beats.push(current.time);
+                lastBeat = current.time;
+              }
+            }
+          }
+        }
+        
+        console.log(`🎵 Detected ${beats.length} beats`);
+        return beats;
+      };
+
+      const estimateBPM = (beats) => {
+        if (beats.length < 2) return 120;
+        
+        const intervals = [];
+        for (let i = 1; i < Math.min(beats.length, 50); i++) {
+          intervals.push(beats[i] - beats[i - 1]);
+        }
+        
+        // Use median instead of mean for better stability
+        intervals.sort((a, b) => a - b);
+        const medianInterval = intervals[Math.floor(intervals.length / 2)];
+        return Math.round(60 / medianInterval);
+      };
+
+      const generateNotePattern = (beats, duration) => {
+        const notes = [];
+        const difficultySettings = {
+          easy: { notesPerBeat: 1, skipPattern: 2 },
+          medium: { notesPerBeat: 1, skipPattern: 0 },
+          hard: { notesPerBeat: 2, skipPattern: 0 }
+        };
+        
+        const settings = difficultySettings[difficulty];
+        
+        beats.forEach((beatTime, index) => {
+          // Skip some beats on easier difficulties
+          if (settings.skipPattern > 0 && index % settings.skipPattern !== 0) return;
+          
+          // Generate more notes for harder difficulties
+          const notesToGenerate = settings.notesPerBeat;
+          const usedLanes = new Set();
+          
+          for (let i = 0; i < notesToGenerate; i++) {
+            let lane;
+            let attempts = 0;
+            
+            // Avoid duplicate lanes in the same beat
+            do {
+              lane = LANES[Math.floor(Math.random() * LANES.length)];
+              attempts++;
+            } while (usedLanes.has(lane) && attempts < 10);
+            
+            usedLanes.add(lane);
+            const offset = i * 0.15;
+            
+            notes.push({
+              id: `${beatTime}-${lane}-${i}`,
+              lane,
+              time: beatTime + offset,
+              hit: false,
+              missed: false,
+              spawned: false
+            });
+          }
+        });
+        
+        console.log(`Generated ${notes.length} notes`);
+        return notes.sort((a, b) => a.time - b.time);
+      };
+
+      const createParticles = (lane, accuracy) => {
+        const laneIndex = LANES.indexOf(lane);
+        // Reduced particle count for performance
+        const particleCount = accuracy === 'perfect' ? 8 : accuracy === 'good' ? 5 : 3;
+        const newParticles = [];
+        
+        for (let i = 0; i < particleCount; i++) {
+          const angle = (Math.PI * 2 * i) / particleCount;
+          const velocity = 50 + Math.random() * 30;
+          
+          newParticles.push({
+            id: Date.now() + i,
+            lane: laneIndex,
+            x: Math.cos(angle) * velocity,
+            y: Math.sin(angle) * velocity,
+            color: accuracy === 'perfect' ? '#fbbf24' : accuracy === 'good' ? '#34d399' : '#60a5fa',
+            size: accuracy === 'perfect' ? 10 : 6
+          });
+        }
+        
+        setParticles(prev => [...prev, ...newParticles]);
+        setTimeout(() => {
+          setParticles(prev => prev.filter(p => !newParticles.find(np => np.id === p.id)));
+        }, 600);
+      };
+
+      const createHitBurst = (lane) => {
+        const laneIndex = LANES.indexOf(lane);
+        const burstId = Date.now();
+        
+        setHitBursts(prev => [...prev, { id: burstId, lane: laneIndex }]);
+        setTimeout(() => {
+          setHitBursts(prev => prev.filter(b => b.id !== burstId));
+        }, 500);
+      };
+      
+      const createPerfectRing = (lane) => {
+        const laneIndex = LANES.indexOf(lane);
+        const ringId = Date.now() + Math.random();
+        
+        setPerfectRings(prev => [...prev, { id: ringId, lane: laneIndex }]);
+        setTimeout(() => {
+          setPerfectRings(prev => prev.filter(r => r.id !== ringId));
+        }, 600);
+      };
+      
+      const createStarBurst = (lane) => {
+        const laneIndex = LANES.indexOf(lane);
+        const stars = [];
+        
+        // Reduced from 8 to 4 stars for performance
+        for (let i = 0; i < 4; i++) {
+          stars.push({
+            id: Date.now() + i,
+            lane: laneIndex,
+            rotation: i * 90
+          });
+        }
+        
+        setStarBursts(prev => [...prev, ...stars]);
+        setTimeout(() => {
+          setStarBursts(prev => prev.filter(s => !stars.find(star => star.id === s.id)));
+        }, 800);
+      };
+
+      const handleGenreSelect = (genre) => {
+        setSelectedGenre(genre);
+      };
+
+      const handleFileUpload = (e) => {
+        const file = e.target.files[0];
+        if (file && file.type.startsWith('audio/')) {
+          setAudioFile(file);
+          setScore(0);
+          setCombo(0);
+          setMaxCombo(0);
+          setCurrentTime(0);
+          setStats({ perfect: 0, good: 0, ok: 0, miss: 0 });
+          analyzeAudio(file);
+        } else {
+          alert('Please upload a valid audio file (MP3, WAV, etc.)');
+        }
+      };
+
+      const startGame = () => {
+        if (!audioRef.current || !songData) return;
+        
+        setIsPlaying(true);
+        setScore(0);
+        setCombo(0);
+        setMaxCombo(0);
+        setCurrentTime(0);
+        setStats({ perfect: 0, good: 0, ok: 0, miss: 0 });
+        startTimeRef.current = Date.now();
+        
+        setNotes(prev => prev.map(note => ({ ...note, hit: false, missed: false, spawned: false })));
+        
+        audioRef.current.currentTime = 0;
+        audioRef.current.volume = 1.0;
+        
+        const gameLoop = () => {
+          if (!audioRef.current) return;
+          
+          const elapsed = (Date.now() - startTimeRef.current) / 1000;
+          setCurrentTime(elapsed);
+          
+          // Check for missed notes and flash on beats
+          setNotes(prev => {
+            const updated = prev.map(note => {
+              // Flash indicator when a note spawns (at the top)
+              if (!note.spawned && (note.time - elapsed) <= NOTE_SPEED && (note.time - elapsed) > NOTE_SPEED - 0.1) {
+                setBeatFlash(true);
+                setTimeout(() => setBeatFlash(false), 100);
+                return { ...note, spawned: true };
+              }
+              
+              if (!note.hit && !note.missed && (elapsed - note.time) > HIT_WINDOW) {
+                setStats(prevStats => ({ ...prevStats, miss: prevStats.miss + 1 }));
+                setCombo(0);
+                return { ...note, missed: true };
+              }
+              return note;
+            });
+            return updated;
+          });
+          
+          if (elapsed >= songData.duration) {
+            stopGame();
+            return;
+          }
+          
+          animationFrameRef.current = requestAnimationFrame(gameLoop);
+        };
+        
+        audioRef.current.play()
+          .then(() => console.log('Audio playing'))
+          .catch(error => console.error('Audio error:', error));
+        
+        gameLoop();
+      };
+
+      const stopGame = () => {
+        setIsPlaying(false);
+        if (audioRef.current) {
+          audioRef.current.pause();
+        }
+        if (animationFrameRef.current) {
+          cancelAnimationFrame(animationFrameRef.current);
+        }
+      };
+
+      const handleKeyPress = (e) => {
+        if (!LANE_KEYS[e.key]) return;
+        
+        e.preventDefault();
+        e.stopPropagation();
+        
+        if (!isPlaying) return;
+        
+        const lane = LANE_KEYS[e.key];
+        const currentGameTime = currentTime + AUDIO_OFFSET;
+        
+        const hittableNotes = notes.filter(note => 
+          note.lane === lane &&
+          !note.hit &&
+          !note.missed &&
+          Math.abs(note.time - currentGameTime) < HIT_WINDOW
+        );
+        
+        if (hittableNotes.length > 0) {
+          const closestNote = hittableNotes.reduce((closest, note) => 
+            Math.abs(note.time - currentGameTime) < Math.abs(closest.time - currentGameTime) ? note : closest
+          );
+          
+          const timeDiff = Math.abs(closestNote.time - currentGameTime);
+          const accuracy = timeDiff < 0.07 ? 'perfect' : timeDiff < 0.13 ? 'good' : 'ok';
+          
+          setNotes(prev => prev.map(n => 
+            n.id === closestNote.id ? { ...n, hit: true } : n
+          ));
+          
+          const points = accuracy === 'perfect' ? 100 : accuracy === 'good' ? 75 : 50;
+          setScore(prev => prev + points * (1 + combo * 0.1));
+          setCombo(prev => {
+            const newCombo = prev + 1;
+            setMaxCombo(current => Math.max(current, newCombo));
+            return newCombo;
+          });
+          
+          setStats(prev => ({ ...prev, [accuracy]: prev[accuracy] + 1 }));
+          setHitFeedback({ lane, accuracy, time: Date.now() });
+          createParticles(lane, accuracy);
+          createHitBurst(lane);
+          
+          // Extra effects for perfect hits
+          if (accuracy === 'perfect') {
+            createPerfectRing(lane);
+            if (combo > 0 && combo % 10 === 0) {
+              createStarBurst(lane);
+            }
+          }
+          
+          setTimeout(() => setHitFeedback({}), 300);
+          
+        } else {
+          setCombo(0);
+          setHitFeedback({ lane, accuracy: 'miss', time: Date.now() });
+          setTimeout(() => setHitFeedback({}), 300);
+        }
+      };
+
+      useEffect(() => {
+        const handleKeyDown = (e) => handleKeyPress(e);
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+      }, [isPlaying, currentTime, notes, combo]);
+
+      const getLaneIcon = (lane) => {
+        const icons = { left: '←', down: '↓', up: '↑', right: '→' };
+        return icons[lane];
+      };
+
+      const getNotePosition = (noteTime) => {
+        const timeUntilHit = noteTime - currentTime;
+        const hitZonePosition = 85;
+        const position = hitZonePosition - (timeUntilHit / NOTE_SPEED * hitZonePosition);
+        return Math.max(0, Math.min(100, position));
+      };
+
+      const progress = songData ? (currentTime / songData.duration) * 100 : 0;
+      const accuracy = stats.perfect + stats.good + stats.ok + stats.miss > 0
+        ? ((stats.perfect + stats.good) / (stats.perfect + stats.good + stats.ok + stats.miss) * 100).toFixed(1)
+        : 100;
+
+      // Genre Selection Screen
+      if (!selectedGenre) {
+        return (
+          <div className={`min-h-screen bg-gradient-to-b ${theme.bg} text-white flex items-center justify-center p-6 relative overflow-hidden`}>
+            {/* Simplified animated background - only 2 orbs instead of 3 */}
+            <div className="absolute inset-0 bg-pattern"></div>
+            <div className="absolute top-20 left-20 w-96 h-96 bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float"></div>
+            <div className="absolute bottom-20 right-20 w-96 h-96 bg-pink-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float" style={{animationDelay: '2s'}}></div>
+            
+            <div className="max-w-5xl w-full animate-slide-in relative z-10">
+              <div className="text-center mb-12">
+                <div className="mb-6 relative inline-block">
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 blur-3xl opacity-50 animate-pulse-slow"></div>
+                  <h1 className="text-8xl font-black mb-4 bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 bg-clip-text text-transparent animate-pulse-slow neon-text relative">
+                    RHYTHM HERO
+                  </h1>
+                </div>
+                <p className="text-3xl text-gray-200 mb-3 font-bold">Select Your Genre</p>
+                <p className="text-xl text-gray-400">Choose the vibe that matches your music 🎵</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {Object.entries(GENRE_THEMES).map(([key, genre]) => (
+                  <button
+                    key={key}
+                    onClick={() => handleGenreSelect(key)}
+                    className={`genre-card bg-gradient-to-br ${genre.primary} p-10 rounded-3xl shadow-2xl cursor-pointer border-4 ${genre.borderColor} glass-effect`}
+                    style={{'--glow-color': genre.glow}}
+                  >
+                    <div className="text-8xl mb-6 animate-float">{genre.emoji}</div>
+                    <h3 className="text-4xl font-black mb-3">{genre.name}</h3>
+                    <p className="text-base opacity-90 font-semibold">{genre.description}</p>
+                    <div className="mt-4 h-1 w-full bg-white bg-opacity-20 rounded-full overflow-hidden">
+                      <div className="h-full bg-white w-0 group-hover:w-full transition-all duration-500"></div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      // Main Game Screen
+      return (
+        <div className={`min-h-screen bg-gradient-to-b ${theme.bg} text-white relative overflow-hidden`}>
+          {/* Simplified background - only pattern and one orb */}
+          <div className="absolute inset-0 bg-pattern"></div>
+          <div className="absolute top-20 right-20 w-96 h-96 rounded-full mix-blend-multiply filter blur-3xl opacity-15 animate-float"
+            style={{background: theme.glow}}></div>
+          
+          <div className="container mx-auto px-4 py-8 relative z-10">
+            
+            {/* Header with Genre Badge */}
+            <div className="text-center mb-6 animate-slide-in">
+              <div className="flex items-center justify-center gap-4 mb-4">
+                <button
+                  onClick={() => {
+                    if (isPlaying) stopGame();
+                    setSelectedGenre(null);
+                    setSongData(null);
+                    setAudioFile(null);
+                  }}
+                  className="text-sm bg-gray-800 hover:bg-gray-700 px-5 py-3 rounded-xl transition-all glass-effect font-bold"
+                >
+                  ← Change Genre
+                </button>
+                <div className={`inline-flex items-center gap-3 bg-gradient-to-r ${theme.primary} px-8 py-4 rounded-2xl text-2xl font-black shadow-2xl animate-glow border-2 ${theme.borderColor}`}
+                  style={{'--glow-color': theme.glow}}>
+                  <span className="text-4xl animate-pulse-slow">{theme.emoji}</span>
+                  <span>{theme.name}</span>
+                </div>
+              </div>
+              <div className="relative inline-block">
+                <div className="absolute inset-0 blur-2xl opacity-50"
+                  style={{background: theme.glow}}></div>
+                <h1 className={`text-6xl font-black mb-2 bg-gradient-to-r ${theme.textGradient} bg-clip-text text-transparent neon-text relative`}>
+                  RHYTHM HERO
+                </h1>
+              </div>
+            </div>
+
+            {/* Upload Section */}
+            {!songData && (
+              <div className="max-w-2xl mx-auto animate-slide-in">
+                {/* Difficulty Selector */}
+                <div className="mb-6 text-center">
+                  <p className="text-gray-400 mb-3">Select Difficulty:</p>
+                  <div className="flex gap-3 justify-center">
+                    {['easy', 'medium', 'hard'].map(diff => (
+                      <button
+                        key={diff}
+                        onClick={() => setDifficulty(diff)}
+                        className={`px-6 py-2 rounded-lg font-bold transition-all ${
+                          difficulty === diff
+                            ? `bg-gradient-to-r ${theme.primary} shadow-lg scale-105`
+                            : 'bg-gray-800 hover:bg-gray-700'
+                        }`}
+                      >
+                        {diff.toUpperCase()}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <label className={`flex flex-col items-center justify-center w-full h-72 border-2 border-dashed ${theme.borderColor} rounded-2xl cursor-pointer bg-gray-800 hover:bg-gray-700 transition-all animate-glow`}
+                  style={{'--glow-color': theme.glow}}>
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    {isAnalyzing ? (
+                      <>
+                        <div className="text-6xl mb-4 animate-pulse">{theme.emoji}</div>
+                        <p className="text-2xl font-bold mb-2">Analyzing...</p>
+                        <p className="text-gray-400">Detecting beats & generating patterns</p>
+                        <div className="mt-4 w-48 h-2 bg-gray-700 rounded-full overflow-hidden">
+                          <div className={`h-full bg-gradient-to-r ${theme.secondary} animate-pulse`} style={{width: '60%'}}></div>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="text-6xl mb-4 animate-pulse-slow">🎵</div>
+                        <p className="text-2xl font-bold mb-2">Drop Your {theme.name} Track</p>
+                        <p className="text-gray-400 mb-2">MP3, WAV, OGG, FLAC</p>
+                        <p className={`text-sm text-${theme.accent}`}>AI analyzes beats for perfect patterns</p>
+                      </>
+                    )}
+                  </div>
+                  <input 
+                    type="file" 
+                    className="hidden" 
+                    accept="audio/*"
+                    onChange={handleFileUpload}
+                    disabled={isAnalyzing}
+                  />
+                </label>
+              </div>
+            )}
+
+            {/* Game Section */}
+            {songData && (
+              <div className="max-w-6xl mx-auto animate-slide-in">
+                
+                {/* Enhanced Song Info */}
+                <div className="bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 rounded-2xl p-5 mb-4 shadow-2xl border border-gray-700">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex-1">
+                      <h2 className={`text-2xl font-black mb-1 text-transparent bg-clip-text bg-gradient-to-r ${theme.textGradient}`}>
+                        {songData.title}
+                      </h2>
+                      <div className="flex gap-4 text-sm text-gray-400">
+                        <span>🎵 {songData.bpm} BPM</span>
+                        <span>🎯 {notes.length} Notes</span>
+                        <span>🥁 {songData.beatCount} Beats Detected</span>
+                        <span>📊 {accuracy}% Accuracy</span>
+                        <span className="uppercase text-xs opacity-75">{difficulty} Mode</span>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className={`text-4xl font-black text-${theme.accent} mb-1`}>{Math.round(score)}</div>
+                      <div className={`text-xl font-bold ${combo > 0 ? 'text-yellow-400 combo-bounce' : 'text-gray-500'}`}>
+                        {combo > 0 ? `${combo}x COMBO` : 'NO COMBO'}
+                      </div>
+                      {maxCombo > 0 && <div className="text-xs text-gray-500">Best: {maxCombo}x</div>}
+                    </div>
+                  </div>
+                  
+                  {/* Progress Bar */}
+                  <div className="mb-3">
+                    <div className="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
+                      <div 
+                        className={`h-full bg-gradient-to-r ${theme.secondary} progress-bar`}
+                        style={{width: `${progress}%`}}
+                      ></div>
+                    </div>
+                  </div>
+                  
+                  {/* Stats Row */}
+                  <div className="grid grid-cols-4 gap-2 mb-3 text-center text-sm">
+                    <div className="bg-yellow-500 bg-opacity-20 rounded-lg p-2">
+                      <div className="text-yellow-400 font-bold text-lg">{stats.perfect}</div>
+                      <div className="text-xs text-gray-400">Perfect</div>
+                    </div>
+                    <div className="bg-green-500 bg-opacity-20 rounded-lg p-2">
+                      <div className="text-green-400 font-bold text-lg">{stats.good}</div>
+                      <div className="text-xs text-gray-400">Good</div>
+                    </div>
+                    <div className="bg-blue-500 bg-opacity-20 rounded-lg p-2">
+                      <div className="text-blue-400 font-bold text-lg">{stats.ok}</div>
+                      <div className="text-xs text-gray-400">Ok</div>
+                    </div>
+                    <div className="bg-red-500 bg-opacity-20 rounded-lg p-2">
+                      <div className="text-red-400 font-bold text-lg">{stats.miss}</div>
+                      <div className="text-xs text-gray-400">Miss</div>
+                    </div>
+                  </div>
+                  
+                  {/* Controls */}
+                  <div className="flex gap-3">
+                    {!isPlaying ? (
+                      <button
+                        onClick={startGame}
+                        className={`flex-1 bg-gradient-to-r ${theme.primary} hover:opacity-90 text-white font-bold py-3 rounded-xl transition-all transform hover:scale-105 shadow-lg`}
+                      >
+                        ▶ START GAME
+                      </button>
+                    ) : (
+                      <button
+                        onClick={stopGame}
+                        className="flex-1 bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-bold py-3 rounded-xl transition-all transform hover:scale-105 shadow-lg"
+                      >
+                        ⏹ STOP
+                      </button>
+                    )}
+                    
+                    <button
+                      onClick={() => {
+                        stopGame();
+                        setSongData(null);
+                        setAudioFile(null);
+                        setNotes([]);
+                      }}
+                      className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-xl transition-all transform hover:scale-105"
+                    >
+                      🔄 NEW SONG
+                    </button>
+                  </div>
+                </div>
+
+                {/* Enhanced Game Area */}
+                <div className="relative bg-black rounded-3xl overflow-hidden shadow-2xl border-4 border-gray-800 glass-effect" style={{height: '650px'}}>
+                  
+                  {/* Simplified background - removed multiple layers */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-gray-900 to-black opacity-50"></div>
+                  
+                  {/* Beat flash indicator - ENHANCED but optimized */}
+                  {beatFlash && (
+                    <div className="absolute top-0 left-0 right-0 h-3 bg-gradient-to-r from-transparent via-white to-transparent z-50" style={{boxShadow: '0 0 20px rgba(255,255,255,0.8)'}}></div>
+                  )}
+                  
+                  <div className="absolute inset-0 flex">
+                    {LANES.map((lane, laneIndex) => (
+                      <div key={lane} className="flex-1 border-r border-gray-800 relative">
+                        
+                        {/* Simplified trail - removed pulse animation */}
+                        <div className="trail" style={{'--trail-color': theme.trailColor}}></div>
+                        
+                        {/* Hit zone - ULTRA ENHANCED */}
+                        <div className={`absolute left-0 right-0 h-28 bg-gradient-to-b ${theme.hitZone} bg-opacity-15 border-y-4 ${theme.borderColor} transition-all`} 
+                          style={{
+                            top: '85%', 
+                            transform: 'translateY(-50%)',
+                            boxShadow: `inset 0 0 30px ${theme.glow}`
+                          }} />
+                        <div className={`absolute left-0 right-0 h-2 bg-${theme.accent} shadow-lg lane-glow`} 
+                          style={{
+                            top: '85%',
+                            boxShadow: `0 0 20px ${theme.glow}, 0 0 40px ${theme.glow}`
+                          }} />
+                        
+                        {/* Perfect hit rings */}
+                        {perfectRings.filter(r => r.lane === laneIndex).map(ring => (
+                          <div
+                            key={ring.id}
+                            className={`absolute left-1/2 transform -translate-x-1/2 w-24 h-24 rounded-full border-4 border-yellow-400 perfect-ring`}
+                            style={{
+                              top: '85%', 
+                              transform: 'translate(-50%, -50%)',
+                              boxShadow: '0 0 30px rgba(251, 191, 36, 0.8)'
+                            }}
+                          />
+                        ))}
+                        
+                        {/* Star bursts for combo milestones */}
+                        {starBursts.filter(s => s.lane === laneIndex).map(star => (
+                          <div
+                            key={star.id}
+                            className="absolute left-1/2 top-[85%] transform -translate-x-1/2 -translate-y-1/2 star-burst"
+                            style={{
+                              width: '60px',
+                              height: '60px',
+                              background: 'linear-gradient(45deg, #fbbf24, #f59e0b)',
+                              clipPath: 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)',
+                              transform: `translate(-50%, -50%) rotate(${star.rotation}deg)`,
+                              filter: 'drop-shadow(0 0 10px #fbbf24)'
+                            }}
+                          />
+                        ))}
+                        
+                        {/* Lane button - MEGA ENHANCED */}
+                        <div className="absolute bottom-8 left-0 right-0 flex justify-center z-10">
+                          <div className={`w-24 h-24 rounded-2xl flex items-center justify-center text-5xl font-black transition-all shadow-2xl ${
+                            hitFeedback.lane === lane && Date.now() - hitFeedback.time < 300
+                              ? hitFeedback.accuracy === 'miss' 
+                                ? 'bg-red-500 scale-125 animate-shake'
+                                : hitFeedback.accuracy === 'perfect'
+                                ? 'bg-yellow-400 scale-150 lane-glow'
+                                : hitFeedback.accuracy === 'good'
+                                ? 'bg-green-500 scale-140 lane-glow'
+                                : 'bg-blue-500 scale-130 lane-glow'
+                              : 'bg-gray-800 border-4 border-gray-700 glass-effect'
+                          }`} style={{
+                            boxShadow: hitFeedback.lane === lane && hitFeedback.accuracy !== 'miss' 
+                              ? `0 0 40px currentColor, 0 0 80px currentColor` 
+                              : 'none',
+                            transition: 'all 0.1s ease-out'
+                          }}>
+                            {getLaneIcon(lane)}
+                          </div>
+                        </div>
+                        
+                        {/* Hit flash effect - ENHANCED */}
+                        {hitFeedback.lane === lane && hitFeedback.accuracy !== 'miss' && Date.now() - hitFeedback.time < 300 && (
+                          <>
+                            <div className="hit-flash" />
+                            <div className="absolute inset-0 border-4 border-white opacity-50 animate-pulse"></div>
+                          </>
+                        )}
+                        
+                        {/* Hit burst rings - ENHANCED */}
+                        {hitBursts.filter(b => b.lane === laneIndex).map(burst => (
+                          <div
+                            key={burst.id}
+                            className={`absolute left-1/2 transform -translate-x-1/2 w-24 h-24 rounded-full border-4 border-${theme.accent} hit-burst`}
+                            style={{
+                              top: '85%', 
+                              transform: 'translate(-50%, -50%)',
+                              boxShadow: `0 0 30px ${theme.glow}`
+                            }}
+                          />
+                        ))}
+                        
+                        {/* Particles - OPTIMIZED */}
+                        {particles.filter(p => p.lane === laneIndex).map(particle => (
+                          <div
+                            key={particle.id}
+                            className="absolute particle"
+                            style={{
+                              left: '50%',
+                              top: '85%',
+                              width: `${particle.size}px`,
+                              height: `${particle.size}px`,
+                              borderRadius: '50%',
+                              backgroundColor: particle.color,
+                              boxShadow: `0 0 10px ${particle.color}`,
+                              '--tx': `${particle.x}px`,
+                              '--ty': `${particle.y}px`
+                            }}
+                          />
+                        ))}
+
+                        {/* Notes - OPTIMIZED */}
+                        {notes
+                          .filter(note => note.lane === lane && !note.hit && !note.missed)
+                          .map(note => {
+                            const position = getNotePosition(note.time);
+                            if (position < -10 || position > 110) return null;
+                            
+                            const isApproaching = position > 75;
+                            
+                            return (
+                              <div
+                                key={note.id}
+                                className="absolute left-1/2 transform -translate-x-1/2"
+                                style={{ top: `${position}%` }}
+                              >
+                                <div className={`w-16 h-16 bg-gradient-to-br ${theme.noteGradient} rounded-2xl flex items-center justify-center shadow-2xl text-4xl font-black border-4 ${theme.borderColor} transition-transform ${isApproaching ? 'scale-110' : ''}`}
+                                  style={{
+                                    boxShadow: isApproaching 
+                                      ? `0 0 20px ${theme.glow}` 
+                                      : `0 0 10px ${theme.glow}`
+                                  }}>
+                                  {getLaneIcon(lane)}
+                                </div>
+                              </div>
+                            );
+                          })}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* MEGA ENHANCED accuracy feedback */}
+                  {hitFeedback.accuracy && Date.now() - hitFeedback.time < 300 && (
+                    <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none z-20">
+                      <div className={`text-7xl font-black animate-slide-in ${
+                        hitFeedback.accuracy === 'perfect' ? 'text-yellow-400' :
+                        hitFeedback.accuracy === 'good' ? 'text-green-400' :
+                        hitFeedback.accuracy === 'ok' ? 'text-blue-400' :
+                        'text-red-400'
+                      }`} style={{
+                        textShadow: '0 0 40px currentColor, 0 0 80px currentColor, 0 0 120px currentColor',
+                        filter: 'drop-shadow(0 0 20px currentColor)'
+                      }}>
+                        {hitFeedback.accuracy === 'perfect' ? '★ PERFECT ★' :
+                         hitFeedback.accuracy === 'good' ? '✓ GOOD !' :
+                         hitFeedback.accuracy === 'ok' ? '◆ OK ◆' :
+                         '✗ MISS ✗'}
+                      </div>
+                      {/* Extra sparkles for perfect */}
+                      {hitFeedback.accuracy === 'perfect' && (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="text-6xl animate-pulse">✨</div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* ENHANCED Combo display on screen */}
+                  {combo >= 10 && isPlaying && (
+                    <div className="absolute top-12 left-1/2 transform -translate-x-1/2 pointer-events-none z-20">
+                      <div className={`text-6xl font-black text-yellow-400 ${combo % 10 === 0 ? 'combo-bounce' : ''}`} 
+                        style={{
+                          textShadow: '0 0 30px #fbbf24, 0 0 60px #fbbf24, 0 0 90px #fbbf24',
+                          filter: 'drop-shadow(0 0 30px #fbbf24)'
+                        }}>
+                        {combo}x COMBO!
+                      </div>
+                      {combo >= 50 && (
+                        <div className="text-center text-2xl font-bold text-white mt-2 animate-pulse"
+                          style={{textShadow: '0 0 20px #fff'}}>
+                          🔥 ON FIRE 🔥
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Instructions overlay */}
+                  {!isPlaying && (
+                    <div className="absolute inset-0 bg-black bg-opacity-90 flex items-center justify-center backdrop-blur-sm z-30">
+                      <div className="text-center animate-slide-in">
+                        <p className={`text-3xl font-black mb-6 text-transparent bg-clip-text bg-gradient-to-r ${theme.textGradient}`}>
+                          Use Arrow Keys!
+                        </p>
+                        <div className="flex gap-4 justify-center mb-6">
+                          <div className="w-16 h-16 bg-gradient-to-br from-gray-700 to-gray-800 rounded-xl flex items-center justify-center text-3xl border-2 border-gray-600 shadow-xl animate-pulse-slow">←</div>
+                          <div className="w-16 h-16 bg-gradient-to-br from-gray-700 to-gray-800 rounded-xl flex items-center justify-center text-3xl border-2 border-gray-600 shadow-xl animate-pulse-slow">↓</div>
+                          <div className="w-16 h-16 bg-gradient-to-br from-gray-700 to-gray-800 rounded-xl flex items-center justify-center text-3xl border-2 border-gray-600 shadow-xl animate-pulse-slow">↑</div>
+                          <div className="w-16 h-16 bg-gradient-to-br from-gray-700 to-gray-800 rounded-xl flex items-center justify-center text-3xl border-2 border-gray-600 shadow-xl animate-pulse-slow">→</div>
+                        </div>
+                        <p className="text-gray-400 text-lg">Hit notes when they reach the <span className={`text-${theme.accent} font-bold`}>glowing zone</span>!</p>
+                        <p className="text-gray-500 text-sm mt-2">Build combos for massive scores 🔥</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('app'));
+    root.render(<RhythmGame />);
+  </script>
+</body>
+</html>
