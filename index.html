@@ -211,6 +211,104 @@
     .note-shadow {
       filter: drop-shadow(0 0 10px currentColor);
     }
+
+    /* Enhanced Title Styles */
+    .title-main {
+      position: relative;
+      display: inline-block;
+      font-size: 8rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, #ff006e, #8338ec, #3a86ff, #06ffa5);
+      background-size: 400% 400%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: gradientFlow 4s ease infinite, titlePulse 2s ease-in-out infinite;
+      filter: drop-shadow(0 0 30px rgba(255, 0, 110, 0.8)) drop-shadow(0 0 60px rgba(131, 56, 236, 0.6));
+      letter-spacing: 2px;
+    }
+
+    @keyframes gradientFlow {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    @keyframes titlePulse {
+      0%, 100% { filter: drop-shadow(0 0 30px rgba(255, 0, 110, 0.8)) drop-shadow(0 0 60px rgba(131, 56, 236, 0.6)) brightness(1); }
+      50% { filter: drop-shadow(0 0 50px rgba(255, 0, 110, 1)) drop-shadow(0 0 100px rgba(131, 56, 236, 0.8)) brightness(1.1); }
+    }
+
+    .title-decoration {
+      position: absolute;
+      font-size: 3rem;
+      animation: orbit 6s linear infinite;
+      opacity: 0.8;
+    }
+
+    .title-decoration-1 { top: -20px; left: -40px; animation-delay: 0s; }
+    .title-decoration-2 { top: -20px; right: -40px; animation-delay: 2s; }
+    .title-decoration-3 { bottom: -30px; left: 10%; animation-delay: 1s; }
+    .title-decoration-4 { bottom: -30px; right: 10%; animation-delay: 3s; }
+
+    @keyframes orbit {
+      0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.8; }
+      25% { transform: translateY(-15px) rotate(90deg); opacity: 1; }
+      50% { transform: translateY(0px) rotate(180deg); opacity: 0.8; }
+      75% { transform: translateY(15px) rotate(270deg); opacity: 1; }
+    }
+
+    .subtitle {
+      font-size: 2rem;
+      background: linear-gradient(135deg, #ff006e, #3a86ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 900;
+      letter-spacing: 1px;
+      animation: subtitleGlow 2s ease-in-out infinite;
+    }
+
+    @keyframes subtitleGlow {
+      0%, 100% { filter: brightness(1) blur(0px); }
+      50% { filter: brightness(1.2) blur(0.5px); }
+    }
+
+    .divider-line {
+      height: 3px;
+      background: linear-gradient(90deg, transparent, rgba(255, 0, 110, 0.8), rgba(131, 56, 236, 0.8), rgba(58, 134, 255, 0.8), transparent);
+      margin: 2rem auto;
+      width: 80%;
+      max-width: 500px;
+      border-radius: 2px;
+      animation: lineGlow 2s ease-in-out infinite;
+    }
+
+    @keyframes lineGlow {
+      0%, 100% { filter: brightness(1) blur(0px); }
+      50% { filter: brightness(1.5) blur(1px); }
+    }
+
+    .description-text {
+      font-size: 1.2rem;
+      color: rgba(255, 255, 255, 0.9);
+      letter-spacing: 0.5px;
+      animation: fadeInUp 1s ease-out 0.3s both;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .bounce-icon {
+      display: inline-block;
+      animation: bounceIcon 1s ease-in-out infinite;
+    }
+
+    @keyframes bounceIcon {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
   </style>
 </head>
 <body>
@@ -767,16 +865,22 @@
             <div className="absolute bottom-20 right-20 w-96 h-96 bg-pink-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float" style={{animationDelay: '2s'}}></div>
             
             <div className="max-w-5xl w-full animate-slide-in relative z-10">
-              <div className="text-center mb-12">
-                <div className="mb-6 relative inline-block">
-                  <h1 className="text-8xl font-black mb-4 text-white animate-pulse-slow neon-text relative">
-                    RHYTHM HERO
+              <div className="text-center mb-16">
+                <div className="mb-8 relative inline-block">
+                  <h1 className="title-main mb-4">
+                    Arrowfall
                   </h1>
+                  <span className="title-decoration title-decoration-1">🎵</span>
+                  <span className="title-decoration title-decoration-2">⚡</span>
+                  <span className="title-decoration title-decoration-3">🎸</span>
+                  <span className="title-decoration title-decoration-4">💖</span>
                 </div>
-                <p className="text-3xl text-gray-200 mb-3 font-bold">Select Your Genre</p>
-                <p className="text-xl text-gray-400">Choose the vibe that matches your music 🎵</p>
-                <p className="text-lg text-gray-300 mt-6 mb-2">Need music? Download MP3s from <a href="https://mp3juice.as/" target="_blank" rel="noopener noreferrer" className="text-orange-400 hover:text-orange-300 font-bold underline">MP3 Juice</a></p>
-                <p className="text-sm text-gray-500">Upload your MP3 files below to play in Rhythm Hero!</p>
+                <div className="divider-line"></div>
+                <p className="subtitle mb-6">Select Your Genre</p>
+                <p className="description-text mb-2">Choose the vibe that matches your music <span className="bounce-icon">🎵</span></p>
+                <div className="divider-line" style={{maxWidth: '300px', height: '2px', opacity: 0.5, marginTop: '1.5rem', marginBottom: '1.5rem'}}></div>
+                <p className="text-lg text-gray-300 mb-2">Need music? Download MP3s from <a href="https://mp3juice.as/" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 font-bold underline transition-colors">MP3 Juice</a></p>
+                <p className="text-sm text-gray-400">Upload your MP3 files below to play in Rhythm Hero!</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
