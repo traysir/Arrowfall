@@ -3,20 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="description" content="Arrowfall - A rhythm game that analyzes your music and generates beatmaps">
+  <meta name="theme-color" content="#0f0f0f">
   <title>Arrowfall</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --glow-color: rgba(236, 72, 153, 0.5);
-      --trail-color: rgba(236, 72, 153, 0.3);
+      --glow-color: rgba(236, 72, 153, 0.4);
+      --surface-1: #0a0a0a;
+      --surface-2: #141414;
+      --surface-3: #1a1a1a;
+      --surface-4: #222222;
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.7);
+      --text-muted: rgba(255, 255, 255, 0.4);
+    }
+
+    * {
+      box-sizing: border-box;
     }
 
     body {
       margin: 0;
       padding: 0;
-      font-family: system-ui, -apple-system, sans-serif;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
       overflow-x: hidden;
       touch-action: manipulation;
+      background: var(--surface-1);
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     /* Respect user's motion preferences */
@@ -36,55 +55,50 @@
     }
     
     @keyframes pulse {
-      0%, 100% { transform: scale(1) translateZ(0); }
-      50% { transform: scale(1.05) translateZ(0); }
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.03); }
     }
     
     @keyframes slideIn {
-      from { transform: translateY(-20px) translateZ(0); opacity: 0; }
-      to { transform: translateY(0) translateZ(0); opacity: 1; }
-    }
-    
-    @keyframes glow {
-      0%, 100% { box-shadow: 0 0 20px var(--glow-color); }
-      50% { box-shadow: 0 0 40px var(--glow-color); }
+      from { transform: translateY(-12px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
     }
     
     @keyframes particleFade {
-      0% { transform: translate(0, 0) scale(1) translateZ(0); opacity: 1; }
-      100% { transform: translate(var(--tx), var(--ty)) scale(0) translateZ(0); opacity: 0; }
+      0% { transform: translate(0, 0) scale(1); opacity: 1; }
+      100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
     }
     
     @keyframes shake {
-      0%, 100% { transform: translateX(0) translateZ(0); }
-      25% { transform: translateX(-5px) translateZ(0); }
-      75% { transform: translateX(5px) translateZ(0); }
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      75% { transform: translateX(4px); }
     }
     
     @keyframes hitBurst {
-      0% { transform: scale(1) translateZ(0); opacity: 1; }
-      100% { transform: scale(2.5) translateZ(0); opacity: 0; }
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(2); opacity: 0; }
     }
     
     @keyframes comboGlow {
-      0% { text-shadow: 0 0 10px currentColor; }
-      50% { text-shadow: 0 0 30px currentColor, 0 0 40px currentColor; }
-      100% { text-shadow: 0 0 10px currentColor; }
+      0% { text-shadow: 0 0 8px currentColor; }
+      50% { text-shadow: 0 0 20px currentColor; }
+      100% { text-shadow: 0 0 8px currentColor; }
     }
     
     @keyframes float {
-      0%, 100% { transform: translateY(0px) translateZ(0); }
-      50% { transform: translateY(-20px) translateZ(0); }
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-12px); }
     }
     
     @keyframes perfectRing {
-      0% { transform: scale(0.5) translateZ(0); opacity: 1; }
-      100% { transform: scale(2) translateZ(0); opacity: 0; }
+      0% { transform: scale(0.5); opacity: 1; }
+      100% { transform: scale(1.8); opacity: 0; }
     }
     
     @keyframes starBurst {
-      0% { transform: scale(0) rotate(0deg) translateZ(0); opacity: 1; }
-      100% { transform: scale(1.5) rotate(180deg) translateZ(0); opacity: 0; }
+      0% { transform: scale(0) rotate(0deg); opacity: 1; }
+      100% { transform: scale(1.3) rotate(180deg); opacity: 0; }
     }
     
     @keyframes fadeOut {
@@ -92,166 +106,122 @@
     }
     
     @keyframes comboBounce {
-      0% { transform: scale(0.8) translateZ(0); }
-      50% { transform: scale(1.2) translateZ(0); }
-      100% { transform: scale(1) translateZ(0); }
-    }
-
-    @keyframes gradientFlow {
-      0%, 100% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-    }
-
-    @keyframes titlePulse {
-      0%, 100% { filter: drop-shadow(0 0 30px rgba(255, 0, 110, 0.8)) drop-shadow(0 0 60px rgba(131, 56, 236, 0.6)) brightness(1); }
-      50% { filter: drop-shadow(0 0 50px rgba(255, 0, 110, 1)) drop-shadow(0 0 100px rgba(131, 56, 236, 0.8)) brightness(1.1); }
-    }
-
-    @keyframes orbit {
-      0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.8; }
-      25% { transform: translateY(-15px) rotate(90deg); opacity: 1; }
-      50% { transform: translateY(0px) rotate(180deg); opacity: 0.8; }
-      75% { transform: translateY(15px) rotate(270deg); opacity: 1; }
-    }
-
-    @keyframes subtitleGlow {
-      0%, 100% { filter: brightness(1) blur(0px); }
-      50% { filter: brightness(1.2) blur(0.5px); }
-    }
-
-    @keyframes lineGlow {
-      0%, 100% { filter: brightness(1) blur(0px); }
-      50% { filter: brightness(1.5) blur(1px); }
+      0% { transform: scale(0.9); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
     }
 
     @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
+      from { opacity: 0; transform: translateY(16px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    @keyframes bounceIcon {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
+    @keyframes subtlePulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    @keyframes borderGlow {
+      0%, 100% { border-color: var(--glow-color); }
+      50% { border-color: var(--glow-color-bright, var(--glow-color)); }
     }
     
-    .animate-pulse-slow { animation: pulse 2s ease-in-out infinite; }
-    .animate-slide-in { animation: slideIn 0.3s ease-out; }
-    .animate-glow { animation: glow 2s ease-in-out infinite; }
-    .animate-shake { animation: shake 0.3s ease-in-out; }
-    .animate-float { animation: float 3s ease-in-out infinite; }
-    .particle { animation: particleFade 0.6s ease-out forwards; }
-    .hit-burst { animation: hitBurst 0.5s ease-out forwards; }
-    .perfect-ring { animation: perfectRing 0.6s ease-out forwards; }
-    .star-burst { animation: starBurst 0.8s ease-out forwards; }
-    .combo-bounce { animation: comboBounce 0.3s ease-out, comboGlow 0.5s ease-in-out; }
+    .animate-pulse-slow { animation: pulse 2.5s ease-in-out infinite; }
+    .animate-slide-in { animation: slideIn 0.25s ease-out; }
+    .animate-shake { animation: shake 0.25s ease-in-out; }
+    .animate-float { animation: float 4s ease-in-out infinite; }
+    .particle { animation: particleFade 0.5s ease-out forwards; }
+    .hit-burst { animation: hitBurst 0.4s ease-out forwards; }
+    .perfect-ring { animation: perfectRing 0.5s ease-out forwards; }
+    .star-burst { animation: starBurst 0.6s ease-out forwards; }
+    .combo-bounce { animation: comboBounce 0.25s ease-out, comboGlow 0.4s ease-in-out; }
     
     .hit-flash {
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, transparent 60%);
       pointer-events: none;
-      animation: fadeOut 0.3s ease-out forwards;
+      animation: fadeOut 0.25s ease-out forwards;
     }
     
     .progress-bar { transition: width 0.1s linear; }
     
     .genre-card {
-      transition: all 0.3s ease;
+      transition: all 0.2s ease;
       position: relative;
       overflow: hidden;
     }
     
-    .genre-card::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
-      transform: rotate(45deg);
-      transition: all 0.5s;
+    .genre-card:hover { 
+      transform: translateY(-6px) scale(1.02); 
     }
     
-    .genre-card:hover::before { left: 100%; }
-    .genre-card:hover { transform: translateY(-10px) scale(1.05) translateZ(0); }
+    .genre-card:focus-visible {
+      outline: 2px solid white;
+      outline-offset: 2px;
+    }
     
-    .lane-glow { box-shadow: 0 0 30px currentColor; }
+    .lane-glow { box-shadow: 0 0 24px currentColor; }
     
     .bg-pattern {
       position: absolute;
       inset: 0;
-      opacity: 0.03;
-      background-size: 20px 20px;
-      background-image: linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
-                        linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
+      opacity: 0.015;
+      background-size: 24px 24px;
+      background-image: linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
+                        linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px);
       pointer-events: none;
     }
     
-    .glass-effect {
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+    .card {
+      background: var(--surface-2);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 16px;
+    }
+
+    .card-elevated {
+      background: var(--surface-3);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
     }
 
     .title-main {
       position: relative;
       display: inline-block;
-      font-size: 8rem;
+      font-size: 6rem;
       font-weight: 900;
-      background: linear-gradient(135deg, #ff006e, #8338ec, #3a86ff, #06ffa5);
-      background-size: 400% 400%;
+      color: white;
+      letter-spacing: -2px;
+      text-shadow: 0 0 60px var(--glow-color);
+    }
+
+    .title-accent {
+      background: linear-gradient(135deg, var(--accent-start, #ec4899), var(--accent-end, #8b5cf6));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      animation: gradientFlow 4s ease infinite, titlePulse 2s ease-in-out infinite;
-      filter: drop-shadow(0 0 30px rgba(255, 0, 110, 0.8)) drop-shadow(0 0 60px rgba(131, 56, 236, 0.6));
-      letter-spacing: 2px;
     }
-
-    .title-decoration {
-      position: absolute;
-      font-size: 3rem;
-      animation: orbit 6s linear infinite;
-      opacity: 0.8;
-    }
-
-    .title-decoration-1 { top: -20px; left: -40px; animation-delay: 0s; }
-    .title-decoration-2 { top: -20px; right: -40px; animation-delay: 2s; }
-    .title-decoration-3 { bottom: -30px; left: 10%; animation-delay: 1s; }
-    .title-decoration-4 { bottom: -30px; right: 10%; animation-delay: 3s; }
 
     .subtitle {
-      font-size: 2rem;
-      background: linear-gradient(135deg, #ff006e, #3a86ff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      font-weight: 900;
-      letter-spacing: 1px;
-      animation: subtitleGlow 2s ease-in-out infinite;
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+      letter-spacing: 0.5px;
     }
 
     .divider-line {
-      height: 3px;
-      background: linear-gradient(90deg, transparent, rgba(255, 0, 110, 0.8), rgba(131, 56, 236, 0.8), rgba(58, 134, 255, 0.8), transparent);
-      margin: 2rem auto;
-      width: 80%;
-      max-width: 500px;
-      border-radius: 2px;
-      animation: lineGlow 2s ease-in-out infinite;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+      margin: 1.5rem auto;
+      width: 100%;
+      max-width: 400px;
     }
 
     .description-text {
-      font-size: 1.2rem;
-      color: rgba(255, 255, 255, 0.9);
-      letter-spacing: 0.5px;
-      animation: fadeInUp 1s ease-out 0.3s both;
-    }
-
-    .bounce-icon {
-      display: inline-block;
-      animation: bounceIcon 1s ease-in-out infinite;
+      font-size: 1rem;
+      color: var(--text-secondary);
+      animation: fadeInUp 0.6s ease-out 0.2s both;
     }
 
     /* Touch control zones for mobile */
@@ -262,34 +232,101 @@
       display: flex;
       align-items: flex-end;
       justify-content: center;
-      padding-bottom: 2rem;
+      padding-bottom: 1.5rem;
       -webkit-tap-highlight-color: transparent;
       user-select: none;
     }
 
     .touch-zone:active .touch-btn {
-      transform: scale(1.2);
+      transform: scale(1.15);
       background: var(--active-color);
     }
 
     .touch-btn {
-      width: 70px;
-      height: 70px;
-      border-radius: 16px;
+      width: 64px;
+      height: 64px;
+      border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2rem;
-      font-weight: bold;
-      background: rgba(255, 255, 255, 0.1);
-      border: 2px solid rgba(255, 255, 255, 0.3);
+      font-size: 1.75rem;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.08);
+      border: 2px solid rgba(255, 255, 255, 0.2);
       transition: transform 0.1s, background 0.1s;
     }
 
+    .btn {
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary {
+      background: var(--accent-color, #ec4899);
+      color: white;
+      box-shadow: 0 2px 12px rgba(236, 72, 153, 0.3);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 4px 20px rgba(236, 72, 153, 0.4);
+    }
+
+    .btn-secondary {
+      background: var(--surface-3);
+      color: var(--text-primary);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-secondary:hover {
+      background: var(--surface-4);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: var(--surface-1);
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: var(--surface-4);
+      border-radius: 4px;
+    }
+
     @media (max-width: 768px) {
-      .title-main { font-size: 4rem; }
-      .subtitle { font-size: 1.5rem; }
-      .title-decoration { font-size: 2rem; }
+      .title-main { font-size: 3.5rem; letter-spacing: -1px; }
+      .subtitle { font-size: 1rem; }
+    }
+
+    @media (max-width: 480px) {
+      .title-main { font-size: 2.75rem; }
     }
   </style>
 </head>
@@ -309,51 +346,55 @@
     const GENRE_THEMES = {
       pop: {
         name: 'Pop', emoji: '💖', description: 'Bright & Catchy',
-        bg: 'from-pink-900 via-purple-900 to-black',
-        primary: 'from-pink-500 to-purple-600',
-        secondary: 'from-pink-500 to-purple-500',
-        accent: 'pink-500', glow: 'rgba(236, 72, 153, 0.5)',
-        noteGradient: 'from-pink-400 to-purple-500',
-        hitZone: 'from-pink-500 to-purple-500',
-        textGradient: 'from-pink-400 to-purple-500',
-        borderColor: 'border-pink-500',
-        trailColor: 'rgba(236, 72, 153, 0.3)'
+        bg: 'from-neutral-950 via-neutral-900 to-neutral-950',
+        primary: '#ec4899',
+        secondary: '#d946ef',
+        accent: 'pink-500', 
+        glow: 'rgba(236, 72, 153, 0.35)',
+        noteGradient: 'from-pink-500 to-pink-400',
+        hitZone: 'from-pink-500/20 to-transparent',
+        textColor: '#ec4899',
+        borderColor: 'border-pink-500/40',
+        trailColor: 'rgba(236, 72, 153, 0.15)'
       },
       rock: {
         name: 'Rock', emoji: '🎸', description: 'Classic & Powerful',
-        bg: 'from-orange-900 via-red-950 to-black',
-        primary: 'from-orange-600 to-red-600',
-        secondary: 'from-orange-500 to-red-500',
-        accent: 'orange-500', glow: 'rgba(249, 115, 22, 0.5)',
-        noteGradient: 'from-orange-500 to-red-600',
-        hitZone: 'from-orange-500 to-red-500',
-        textGradient: 'from-orange-400 to-red-500',
-        borderColor: 'border-orange-500',
-        trailColor: 'rgba(249, 115, 22, 0.3)'
+        bg: 'from-neutral-950 via-neutral-900 to-neutral-950',
+        primary: '#f97316',
+        secondary: '#ef4444',
+        accent: 'orange-500', 
+        glow: 'rgba(249, 115, 22, 0.35)',
+        noteGradient: 'from-orange-500 to-orange-400',
+        hitZone: 'from-orange-500/20 to-transparent',
+        textColor: '#f97316',
+        borderColor: 'border-orange-500/40',
+        trailColor: 'rgba(249, 115, 22, 0.15)'
       },
       heavy: {
-        name: 'Heavy', emoji: '💀', description: 'Brutal & Aggressive',
-        bg: 'from-gray-900 via-red-950 to-black',
-        primary: 'from-red-700 to-black',
-        secondary: 'from-red-600 to-gray-900',
-        accent: 'red-600', glow: 'rgba(220, 38, 38, 0.5)',
-        noteGradient: 'from-red-600 to-black',
-        hitZone: 'from-red-600 to-red-800',
-        textGradient: 'from-red-500 to-gray-400',
-        borderColor: 'border-red-600',
-        trailColor: 'rgba(220, 38, 38, 0.3)'
+        name: 'Heavy', emoji: '💀', description: 'Brutal & Intense',
+        bg: 'from-neutral-950 via-neutral-900 to-neutral-950',
+        primary: '#dc2626',
+        secondary: '#991b1b',
+        accent: 'red-600', 
+        glow: 'rgba(220, 38, 38, 0.35)',
+        noteGradient: 'from-red-600 to-red-500',
+        hitZone: 'from-red-600/20 to-transparent',
+        textColor: '#dc2626',
+        borderColor: 'border-red-600/40',
+        trailColor: 'rgba(220, 38, 38, 0.15)'
       },
       electronic: {
         name: 'Electronic', emoji: '⚡', description: 'Energetic & Vibrant',
-        bg: 'from-purple-900 via-blue-900 to-black',
-        primary: 'from-cyan-500 to-blue-600',
-        secondary: 'from-purple-500 to-cyan-500',
-        accent: 'cyan-400', glow: 'rgba(34, 211, 238, 0.5)',
-        noteGradient: 'from-cyan-400 to-blue-500',
-        hitZone: 'from-cyan-500 to-blue-500',
-        textGradient: 'from-cyan-400 to-blue-500',
-        borderColor: 'border-cyan-400',
-        trailColor: 'rgba(34, 211, 238, 0.3)'
+        bg: 'from-neutral-950 via-neutral-900 to-neutral-950',
+        primary: '#06b6d4',
+        secondary: '#3b82f6',
+        accent: 'cyan-400', 
+        glow: 'rgba(6, 182, 212, 0.35)',
+        noteGradient: 'from-cyan-400 to-cyan-300',
+        hitZone: 'from-cyan-500/20 to-transparent',
+        textColor: '#06b6d4',
+        borderColor: 'border-cyan-400/40',
+        trailColor: 'rgba(6, 182, 212, 0.15)'
       }
     };
 
@@ -611,7 +652,7 @@
               height: `${p.size}px`,
               borderRadius: '50%',
               backgroundColor: p.color,
-              boxShadow: `0 0 10px ${p.color}`,
+              boxShadow: `0 0 6px ${p.color}`,
               '--tx': `${p.x}px`,
               '--ty': `${p.y}px`
             }}
@@ -621,12 +662,13 @@
         {hitBursts.map(b => (
           <div
             key={b.id}
-            className={`absolute left-1/2 transform -translate-x-1/2 w-24 h-24 rounded-full border-4 border-${theme.accent} hit-burst gpu-accelerated`}
+            className="absolute w-20 h-20 rounded-full border-2 hit-burst gpu-accelerated"
             style={{
               left: `${(b.laneIndex + 0.5) * 25}%`,
               top: '85%',
               transform: 'translate(-50%, -50%)',
-              boxShadow: `0 0 30px ${theme.glow}`
+              borderColor: theme.primary,
+              boxShadow: `0 0 20px ${theme.glow}`
             }}
           />
         ))}
@@ -634,12 +676,12 @@
         {perfectRings.map(r => (
           <div
             key={r.id}
-            className="absolute w-24 h-24 rounded-full border-4 border-yellow-400 perfect-ring gpu-accelerated"
+            className="absolute w-20 h-20 rounded-full border-2 border-yellow-400 perfect-ring gpu-accelerated"
             style={{
               left: `${(r.laneIndex + 0.5) * 25}%`,
               top: '85%',
               transform: 'translate(-50%, -50%)',
-              boxShadow: '0 0 30px rgba(251, 191, 36, 0.8)'
+              boxShadow: '0 0 20px rgba(251, 191, 36, 0.6)'
             }}
           />
         ))}
@@ -651,12 +693,12 @@
             style={{
               left: `${(s.laneIndex + 0.5) * 25}%`,
               top: '85%',
-              width: '60px',
-              height: '60px',
+              width: '48px',
+              height: '48px',
               background: 'linear-gradient(45deg, #fbbf24, #f59e0b)',
               clipPath: 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)',
               transform: `translate(-50%, -50%) rotate(${s.rotation}deg)`,
-              filter: 'drop-shadow(0 0 10px #fbbf24)'
+              filter: 'drop-shadow(0 0 8px #fbbf24)'
             }}
           />
         ))}
@@ -681,7 +723,7 @@
               style={{ 
                 left: `${index * 25}%`, 
                 width: '25%',
-                '--active-color': theme.glow
+                '--active-color': theme.primary
               }}
               onTouchStart={(e) => handleTouch(lane, e)}
             >
@@ -698,42 +740,52 @@
     // GENRE SELECTION SCREEN
     // ============================================
     const GenreSelection = ({ onSelect, theme }) => (
-      <div className={`min-h-screen bg-gradient-to-b ${theme.bg} text-white flex items-center justify-center p-6 relative overflow-hidden`}>
+      <div className="min-h-screen bg-neutral-950 text-white flex items-center justify-center p-6 relative overflow-hidden">
         <div className="absolute inset-0 bg-pattern"></div>
-        <div className="absolute top-20 left-20 w-96 h-96 bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float gpu-accelerated"></div>
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-pink-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float gpu-accelerated" style={{animationDelay: '2s'}}></div>
         
-        <div className="max-w-5xl w-full animate-slide-in relative z-10">
-          <div className="text-center mb-16">
-            <div className="mb-8 relative inline-block">
-              <h1 className="title-main mb-4">Arrowfall</h1>
-              <span className="title-decoration title-decoration-1">🎵</span>
-              <span className="title-decoration title-decoration-2">⚡</span>
-              <span className="title-decoration title-decoration-3">🎸</span>
-              <span className="title-decoration title-decoration-4">💖</span>
+        {/* Subtle ambient glow */}
+        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] rounded-full opacity-20 blur-3xl"
+          style={{background: 'radial-gradient(circle, rgba(236, 72, 153, 0.3) 0%, transparent 70%)'}}></div>
+        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full opacity-20 blur-3xl"
+          style={{background: 'radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, transparent 70%)'}}></div>
+        
+        <div className="max-w-4xl w-full animate-slide-in relative z-10">
+          <div className="text-center mb-12">
+            <div className="mb-6">
+              <h1 className="title-main mb-2">Arrowfall</h1>
+              <p className="subtitle">Rhythm Game</p>
             </div>
+            
             <div className="divider-line"></div>
-            <p className="subtitle mb-6">Select Your Genre</p>
-            <p className="description-text mb-2">Choose the vibe that matches your music <span className="bounce-icon">🎵</span></p>
-            <div className="divider-line" style={{maxWidth: '300px', height: '2px', opacity: 0.5, marginTop: '1.5rem', marginBottom: '1.5rem'}}></div>
-            <p className="text-lg text-gray-300 mb-2">Upload your MP3 files to play!</p>
-            <p className="text-sm text-gray-400">Supports MP3, WAV, OGG, FLAC</p>
+            
+            <div className="space-y-2 mb-8">
+              <p className="description-text">Choose a genre that matches your music</p>
+              <p className="text-sm text-neutral-500">Supports MP3, WAV, OGG, FLAC</p>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {Object.entries(GENRE_THEMES).map(([key, genre]) => (
               <button
                 key={key}
                 onClick={() => onSelect(key)}
-                className={`genre-card bg-gradient-to-br ${genre.primary} p-10 rounded-3xl shadow-2xl cursor-pointer border-4 ${genre.borderColor} glass-effect`}
+                className="genre-card card-elevated p-6 cursor-pointer text-left group"
                 style={{'--glow-color': genre.glow}}
               >
-                <div className="text-8xl mb-6 animate-float gpu-accelerated">{genre.emoji}</div>
-                <h3 className="text-4xl font-black mb-3">{genre.name}</h3>
-                <p className="text-base opacity-90 font-semibold">{genre.description}</p>
+                <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-200">{genre.emoji}</div>
+                <h3 className="text-xl font-bold mb-1" style={{color: genre.primary}}>{genre.name}</h3>
+                <p className="text-sm text-neutral-400">{genre.description}</p>
+                
+                {/* Hover accent line */}
+                <div className="absolute bottom-0 left-0 right-0 h-1 rounded-b-xl opacity-0 group-hover:opacity-100 transition-opacity"
+                  style={{background: genre.primary}}></div>
               </button>
             ))}
           </div>
+          
+          <p className="text-center text-neutral-600 text-sm mt-8">
+            AI analyzes your music to generate beatmaps
+          </p>
         </div>
       </div>
     );
@@ -1051,78 +1103,88 @@
 
       // Main game screen
       return (
-        <div className={`min-h-screen bg-gradient-to-b ${theme.bg} text-white relative overflow-hidden`}>
+        <div className="min-h-screen bg-neutral-950 text-white relative overflow-hidden">
           <div className="absolute inset-0 bg-pattern"></div>
-          <div className="absolute top-20 right-20 w-96 h-96 rounded-full mix-blend-multiply filter blur-3xl opacity-15 animate-float gpu-accelerated"
-            style={{background: theme.glow}}></div>
           
-          <div className="container mx-auto px-4 py-8 relative z-10">
+          {/* Subtle theme-colored ambient glow */}
+          <div className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full opacity-10 blur-3xl"
+            style={{background: `radial-gradient(circle, ${theme.primary} 0%, transparent 70%)`}}></div>
+          
+          <div className="container mx-auto px-4 py-6 relative z-10">
             
             {/* Header */}
-            <div className="text-center mb-6 animate-slide-in">
-              <div className="flex items-center justify-center gap-4 mb-4">
-                <button
-                  onClick={() => {
-                    if (isPlaying) stopGame();
-                    setSelectedGenre(null);
-                    setSongData(null);
-                  }}
-                  className="text-sm bg-gray-800 hover:bg-gray-700 px-5 py-3 rounded-xl transition-all glass-effect font-bold"
-                >
-                  ← Change Genre
-                </button>
-                <div className={`inline-flex items-center gap-3 bg-gradient-to-r ${theme.primary} px-8 py-4 rounded-2xl text-2xl font-black shadow-2xl animate-glow border-2 ${theme.borderColor}`}
-                  style={{'--glow-color': theme.glow}}>
-                  <span className="text-4xl animate-pulse-slow gpu-accelerated">{theme.emoji}</span>
-                  <span>{theme.name}</span>
+            <div className="flex items-center justify-between mb-6 animate-slide-in">
+              <button
+                onClick={() => {
+                  if (isPlaying) stopGame();
+                  setSelectedGenre(null);
+                  setSongData(null);
+                }}
+                className="btn btn-secondary px-4 py-2 rounded-lg text-sm flex items-center gap-2"
+              >
+                <span>←</span>
+                <span className="hidden sm:inline">Back</span>
+              </button>
+              
+              <div className="flex items-center gap-3">
+                <span className="text-3xl">{theme.emoji}</span>
+                <div>
+                  <h1 className="text-2xl font-bold">Arrowfall</h1>
+                  <p className="text-xs text-neutral-500">{theme.name} Mode</p>
                 </div>
               </div>
-              <h1 className="text-6xl font-black mb-2 text-white">Arrowfall</h1>
+              
+              <div className="w-20"></div> {/* Spacer for centering */}
             </div>
 
             {/* Upload Section */}
             {!songData && (
-              <div className="max-w-2xl mx-auto animate-slide-in">
-                <div className="mb-6 text-center">
-                  <p className="text-gray-400 mb-3">Select Difficulty:</p>
-                  <div className="flex gap-3 justify-center">
+              <div className="max-w-xl mx-auto animate-slide-in">
+                {/* Difficulty Selection */}
+                <div className="mb-6">
+                  <p className="text-sm text-neutral-500 mb-3 text-center">Difficulty</p>
+                  <div className="flex gap-2 justify-center">
                     {['easy', 'medium', 'hard'].map(diff => (
                       <button
                         key={diff}
                         onClick={() => setDifficulty(diff)}
-                        className={`px-6 py-2 rounded-lg font-bold transition-all ${
+                        className={`btn px-5 py-2 rounded-lg text-sm font-semibold transition-all ${
                           difficulty === diff
-                            ? `bg-gradient-to-r ${theme.primary} shadow-lg scale-105`
-                            : 'bg-gray-800 hover:bg-gray-700'
+                            ? 'text-white shadow-lg'
+                            : 'btn-secondary'
                         }`}
+                        style={difficulty === diff ? {background: theme.primary} : {}}
                       >
-                        {diff.toUpperCase()}
+                        {diff.charAt(0).toUpperCase() + diff.slice(1)}
                       </button>
                     ))}
                   </div>
                 </div>
 
-                <label className={`flex flex-col items-center justify-center w-full h-72 border-2 border-dashed ${theme.borderColor} rounded-2xl cursor-pointer bg-gray-800 hover:bg-gray-700 transition-all animate-glow`}
-                  style={{'--glow-color': theme.glow}}>
-                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                    {isAnalyzing ? (
-                      <>
-                        <div className="text-6xl mb-4 animate-pulse">{theme.emoji}</div>
-                        <p className="text-2xl font-bold mb-2">Analyzing...</p>
-                        <p className="text-gray-400">Detecting beats & generating patterns</p>
-                        <div className="mt-4 w-48 h-2 bg-gray-700 rounded-full overflow-hidden">
-                          <div className={`h-full bg-gradient-to-r ${theme.secondary} animate-pulse`} style={{width: '60%'}}></div>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div className="text-6xl mb-4 animate-pulse-slow gpu-accelerated">🎵</div>
-                        <p className="text-2xl font-bold mb-2">Drop Your {theme.name} Track</p>
-                        <p className="text-gray-400 mb-2">MP3, WAV, OGG, FLAC</p>
-                        <p className={`text-sm text-${theme.accent}`}>AI analyzes beats for perfect patterns</p>
-                      </>
-                    )}
-                  </div>
+                {/* Upload Area */}
+                <label className="block card-elevated p-8 cursor-pointer hover:border-neutral-600 transition-all text-center"
+                  style={{borderColor: isAnalyzing ? theme.primary : undefined}}>
+                  {isAnalyzing ? (
+                    <div className="py-8">
+                      <div className="text-5xl mb-4">{theme.emoji}</div>
+                      <p className="text-lg font-semibold mb-2">Analyzing audio...</p>
+                      <p className="text-sm text-neutral-500 mb-4">Detecting beats & generating patterns</p>
+                      <div className="w-48 mx-auto h-1 bg-neutral-800 rounded-full overflow-hidden">
+                        <div className="h-full rounded-full animate-pulse" 
+                          style={{width: '60%', background: theme.primary}}></div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="py-8">
+                      <div className="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center text-3xl"
+                        style={{background: `${theme.primary}20`}}>
+                        🎵
+                      </div>
+                      <p className="text-lg font-semibold mb-1">Drop your track here</p>
+                      <p className="text-sm text-neutral-500 mb-3">or click to browse</p>
+                      <p className="text-xs text-neutral-600">MP3, WAV, OGG, FLAC supported</p>
+                    </div>
+                  )}
                   <input 
                     type="file" 
                     className="hidden" 
@@ -1131,117 +1193,138 @@
                     disabled={isAnalyzing}
                   />
                 </label>
+                
+                <p className="text-center text-neutral-600 text-xs mt-4">
+                  AI analyzes your music to create synchronized beatmaps
+                </p>
               </div>
             )}
 
             {/* Game Section */}
             {songData && (
-              <div className="max-w-6xl mx-auto animate-slide-in">
+              <div className="max-w-5xl mx-auto animate-slide-in">
                 
                 {/* Song Info & Controls */}
-                <div className="bg-gray-800 rounded-2xl p-5 mb-4 shadow-2xl border border-gray-700">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex-1">
-                      <h2 className="text-2xl font-black mb-1 text-white">{songData.title}</h2>
-                      <div className="flex gap-4 text-sm text-gray-400">
-                        <span>🎵 {songData.bpm} BPM</span>
-                        <span>🎯 {notes.length} Notes</span>
-                        <span>🥁 {songData.beatCount} Beats</span>
-                        <span>📊 {accuracy}% Accuracy</span>
-                        <span className="uppercase text-xs opacity-75">{difficulty} Mode</span>
+                <div className="card p-4 mb-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                    <div className="flex-1 min-w-0">
+                      <h2 className="text-lg font-bold truncate mb-1">{songData.title}</h2>
+                      <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-neutral-500">
+                        <span>{songData.bpm} BPM</span>
+                        <span>{notes.length} Notes</span>
+                        <span className="capitalize">{difficulty}</span>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className={`text-4xl font-black text-${theme.accent} mb-1`}>{Math.round(score)}</div>
-                      <div className={`text-xl font-bold ${combo > 0 ? 'text-yellow-400 combo-bounce' : 'text-gray-500'}`}>
-                        {combo > 0 ? `${combo}x Combo` : 'No Combo'}
+                    
+                    {/* Score Display */}
+                    <div className="flex items-center gap-6">
+                      <div className="text-right">
+                        <div className="stat-label">Score</div>
+                        <div className="stat-value" style={{color: theme.primary}}>{Math.round(score).toLocaleString()}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="stat-label">Combo</div>
+                        <div className={`stat-value ${combo > 0 ? 'combo-bounce' : 'text-neutral-600'}`}
+                          style={combo > 0 ? {color: '#fbbf24'} : {}}>
+                          {combo}x
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="stat-label">Accuracy</div>
+                        <div className="stat-value">{accuracy}%</div>
                       </div>
                     </div>
                   </div>
                   
                   {/* Progress bar */}
-                  <div className="h-2 bg-gray-700 rounded-full overflow-hidden mb-3">
-                    <div className={`h-full bg-gradient-to-r ${theme.secondary} progress-bar`} style={{width: `${progress}%`}}></div>
+                  <div className="h-1 bg-neutral-800 rounded-full overflow-hidden mb-4">
+                    <div className="h-full progress-bar rounded-full" 
+                      style={{width: `${progress}%`, background: theme.primary}}></div>
                   </div>
                   
-                  {/* Stats */}
-                  <div className="flex gap-4 text-sm mb-3">
-                    <span className="text-yellow-400">★ {stats.perfect}</span>
-                    <span className="text-green-400">✓ {stats.good}</span>
-                    <span className="text-blue-400">◆ {stats.ok}</span>
-                    <span className="text-red-400">✗ {stats.miss}</span>
-                    <span className="text-gray-400 ml-auto">Best: {maxCombo}x</span>
-                  </div>
-                  
-                  {/* Controls */}
-                  <div className="flex gap-3">
-                    {!isPlaying ? (
-                      <button
-                        onClick={startGame}
-                        className={`flex-1 bg-gradient-to-r ${theme.primary} hover:opacity-90 text-white font-bold py-3 rounded-xl transition-all transform hover:scale-105 shadow-lg`}
-                      >
-                        ▶ START GAME
-                      </button>
-                    ) : (
-                      <button
-                        onClick={stopGame}
-                        className="flex-1 bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-bold py-3 rounded-xl transition-all transform hover:scale-105 shadow-lg"
-                      >
-                        ⏹ STOP
-                      </button>
-                    )}
+                  {/* Stats Row */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex gap-4 text-xs font-medium">
+                      <span className="text-yellow-400">★ {stats.perfect}</span>
+                      <span className="text-green-400">✓ {stats.good}</span>
+                      <span className="text-blue-400">◆ {stats.ok}</span>
+                      <span className="text-red-400">✗ {stats.miss}</span>
+                      <span className="text-neutral-500">Best: {maxCombo}x</span>
+                    </div>
                     
-                    <button
-                      onClick={() => {
-                        stopGame();
-                        setSongData(null);
-                        setNotes([]);
-                      }}
-                      className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-xl transition-all transform hover:scale-105"
-                    >
-                      🔄 NEW SONG
-                    </button>
+                    {/* Controls */}
+                    <div className="flex gap-2">
+                      {!isPlaying ? (
+                        <button
+                          onClick={startGame}
+                          className="btn px-6 py-2 rounded-lg font-semibold text-white"
+                          style={{background: theme.primary}}
+                        >
+                          ▶ Play
+                        </button>
+                      ) : (
+                        <button
+                          onClick={stopGame}
+                          className="btn px-6 py-2 rounded-lg font-semibold bg-red-600 text-white"
+                        >
+                          ⏹ Stop
+                        </button>
+                      )}
+                      
+                      <button
+                        onClick={() => {
+                          stopGame();
+                          setSongData(null);
+                          setNotes([]);
+                        }}
+                        className="btn btn-secondary px-4 py-2 rounded-lg"
+                        title="New Song"
+                      >
+                        ↻
+                      </button>
+                    </div>
                   </div>
                 </div>
 
                 {/* Game Area */}
-                <div className="relative bg-black rounded-3xl overflow-hidden shadow-2xl border-4 border-gray-800 glass-effect" style={{height: '650px'}}>
+                <div className="relative bg-neutral-900 rounded-2xl overflow-hidden border border-neutral-800" style={{height: '580px'}}>
                   
-                  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-gray-900 to-black opacity-50"></div>
+                  {/* Subtle vignette */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/30 pointer-events-none z-10"></div>
                   
                   {/* Lane container */}
                   <div className="relative h-full flex">
                     {LANES.map((lane, laneIndex) => (
                       <div
                         key={lane}
-                        className="relative flex-1 border-x border-gray-800"
-                        style={{background: `linear-gradient(to bottom, transparent 0%, ${theme.trailColor} 85%, transparent 100%)`}}
+                        className="relative flex-1 border-x border-neutral-800/50"
+                        style={{background: `linear-gradient(to bottom, transparent 0%, ${theme.trailColor} 80%, transparent 100%)`}}
                       >
                         {/* Hit zone indicator */}
                         <div 
-                          className={`absolute left-0 right-0 h-32 bg-gradient-to-b ${theme.hitZone} opacity-20`}
-                          style={{ top: '70%' }}
+                          className={`absolute left-0 right-0 h-28 bg-gradient-to-b ${theme.hitZone}`}
+                          style={{ top: '72%' }}
                         />
                         
                         {/* Lane button */}
-                        <div className="absolute bottom-8 left-0 right-0 flex justify-center z-10">
-                          <div className={`w-24 h-24 rounded-2xl flex items-center justify-center text-5xl font-black transition-all shadow-2xl ${
-                            hitFeedback.lane === lane && Date.now() - hitFeedback.time < 300
+                        <div className="absolute bottom-6 left-0 right-0 flex justify-center z-10">
+                          <div className={`w-20 h-20 rounded-xl flex items-center justify-center text-4xl font-bold transition-all duration-75 ${
+                            hitFeedback.lane === lane && Date.now() - hitFeedback.time < 200
                               ? hitFeedback.accuracy === 'miss' 
-                                ? 'bg-red-500 scale-125 animate-shake'
+                                ? 'bg-red-500 scale-110 animate-shake'
                                 : hitFeedback.accuracy === 'perfect'
-                                ? 'bg-yellow-400 scale-150 lane-glow'
+                                ? 'bg-yellow-400 scale-125 lane-glow text-neutral-900'
                                 : hitFeedback.accuracy === 'good'
-                                ? 'bg-green-500 scale-140 lane-glow'
-                                : 'bg-blue-500 scale-130 lane-glow'
-                              : 'bg-gray-800 border-4 border-gray-700 glass-effect'
+                                ? 'bg-green-500 scale-120 lane-glow'
+                                : 'bg-blue-500 scale-115 lane-glow'
+                              : 'bg-neutral-800 border-2 border-neutral-700'
                           }`}>
                             {LANE_ICONS[lane]}
                           </div>
                         </div>
                         
                         {/* Hit flash effect */}
-                        {hitFeedback.lane === lane && hitFeedback.accuracy !== 'miss' && Date.now() - hitFeedback.time < 300 && (
+                        {hitFeedback.lane === lane && hitFeedback.accuracy !== 'miss' && Date.now() - hitFeedback.time < 200 && (
                           <div className="hit-flash" />
                         )}
 
@@ -1250,9 +1333,9 @@
                           .filter(note => note.lane === lane && !note.hit && !note.missed)
                           .map(note => {
                             const position = getNotePosition(note.time);
-                            if (position < -10 || position > 110) return null;
+                            if (position < -5 || position > 105) return null;
                             
-                            const isApproaching = position > 75;
+                            const isApproaching = position > 70;
                             
                             return (
                               <div
@@ -1260,11 +1343,12 @@
                                 className="absolute left-1/2 transform -translate-x-1/2 gpu-accelerated"
                                 style={{ top: `${position}%` }}
                               >
-                                <div className={`w-16 h-16 bg-gradient-to-br ${theme.noteGradient} rounded-2xl flex items-center justify-center shadow-2xl text-4xl font-black border-4 ${theme.borderColor} transition-transform ${isApproaching ? 'scale-110' : ''}`}
+                                <div className={`w-14 h-14 bg-gradient-to-br ${theme.noteGradient} rounded-xl flex items-center justify-center text-3xl font-bold border-2 transition-all duration-75 ${theme.borderColor}`}
                                   style={{
                                     boxShadow: isApproaching 
-                                      ? `0 0 20px ${theme.glow}` 
-                                      : `0 0 10px ${theme.glow}`
+                                      ? `0 0 16px ${theme.glow}` 
+                                      : `0 0 8px ${theme.glow}`,
+                                    transform: isApproaching ? 'scale(1.05)' : 'scale(1)'
                                   }}>
                                   {LANE_ICONS[lane]}
                                 </div>
@@ -1292,39 +1376,34 @@
                   )}
 
                   {/* Accuracy feedback */}
-                  {hitFeedback.accuracy && Date.now() - hitFeedback.time < 300 && (
+                  {hitFeedback.accuracy && Date.now() - hitFeedback.time < 250 && (
                     <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none z-20">
-                      <div className={`text-7xl font-black animate-slide-in ${
+                      <div className={`text-5xl font-black animate-slide-in ${
                         hitFeedback.accuracy === 'perfect' ? 'text-yellow-400' :
                         hitFeedback.accuracy === 'good' ? 'text-green-400' :
                         hitFeedback.accuracy === 'ok' ? 'text-blue-400' :
                         'text-red-400'
                       }`} style={{
-                        textShadow: '0 0 40px currentColor, 0 0 80px currentColor',
-                        filter: 'drop-shadow(0 0 20px currentColor)'
+                        textShadow: '0 0 24px currentColor'
                       }}>
-                        {hitFeedback.accuracy === 'perfect' ? '★ PERFECT ★' :
-                         hitFeedback.accuracy === 'good' ? '✓ GOOD !' :
-                         hitFeedback.accuracy === 'ok' ? '◆ OK ◆' :
-                         '✗ MISS ✗'}
+                        {hitFeedback.accuracy === 'perfect' ? 'PERFECT' :
+                         hitFeedback.accuracy === 'good' ? 'GOOD' :
+                         hitFeedback.accuracy === 'ok' ? 'OK' :
+                         'MISS'}
                       </div>
                     </div>
                   )}
 
                   {/* Combo display */}
                   {combo >= 10 && isPlaying && (
-                    <div className="absolute top-12 left-1/2 transform -translate-x-1/2 pointer-events-none z-20">
-                      <div className={`text-6xl font-black text-yellow-400 ${combo % 10 === 0 ? 'combo-bounce' : ''}`} 
-                        style={{
-                          textShadow: '0 0 30px #fbbf24, 0 0 60px #fbbf24',
-                          filter: 'drop-shadow(0 0 30px #fbbf24)'
-                        }}>
-                        {combo}x COMBO!
+                    <div className="absolute top-8 left-1/2 transform -translate-x-1/2 pointer-events-none z-20">
+                      <div className={`text-4xl font-black text-yellow-400 ${combo % 10 === 0 ? 'combo-bounce' : ''}`} 
+                        style={{textShadow: '0 0 20px rgba(251, 191, 36, 0.6)'}}>
+                        {combo}x
                       </div>
                       {combo >= 50 && (
-                        <div className="text-center text-2xl font-bold text-white mt-2 animate-pulse"
-                          style={{textShadow: '0 0 20px #fff'}}>
-                          🔥 ON FIRE 🔥
+                        <div className="text-center text-sm font-semibold text-white/80 mt-1">
+                          🔥 ON FIRE
                         </div>
                       )}
                     </div>
@@ -1332,20 +1411,21 @@
 
                   {/* Instructions overlay */}
                   {!isPlaying && (
-                    <div className="absolute inset-0 bg-black bg-opacity-90 flex items-center justify-center backdrop-blur-sm z-30">
-                      <div className="text-center animate-slide-in">
-                        <p className={`text-3xl font-black mb-6 text-transparent bg-clip-text bg-gradient-to-r ${theme.textGradient}`}>
-                          Use Arrow Keys or Tap!
+                    <div className="absolute inset-0 bg-black/85 flex items-center justify-center backdrop-blur-sm z-30">
+                      <div className="text-center animate-slide-in px-4">
+                        <p className="text-xl font-bold mb-6" style={{color: theme.primary}}>
+                          Use Arrow Keys or Tap
                         </p>
-                        <div className="flex gap-4 justify-center mb-6">
+                        <div className="flex gap-3 justify-center mb-6">
                           {LANES.map(lane => (
-                            <div key={lane} className="w-16 h-16 bg-gradient-to-br from-gray-700 to-gray-800 rounded-xl flex items-center justify-center text-3xl border-2 border-gray-600 shadow-xl animate-pulse-slow gpu-accelerated">
+                            <div key={lane} className="w-14 h-14 bg-neutral-800 rounded-xl flex items-center justify-center text-2xl border border-neutral-700">
                               {LANE_ICONS[lane]}
                             </div>
                           ))}
                         </div>
-                        <p className="text-gray-400 text-lg">Hit notes when they reach the <span className={`text-${theme.accent} font-bold`}>glowing zone</span>!</p>
-                        <p className="text-gray-500 text-sm mt-2">Build combos for massive scores 🔥</p>
+                        <p className="text-neutral-400 text-sm">
+                          Hit notes when they reach the <span style={{color: theme.primary}}>target zone</span>
+                        </p>
                       </div>
                     </div>
                   )}
