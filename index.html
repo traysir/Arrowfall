@@ -436,16 +436,17 @@
         const sampleRate = audioBuffer.sampleRate;
         const duration = audioBuffer.duration;
         
-        const beats = this.detectBeats(channelData, sampleRate);
+        const { beats, beatEnergies } = this.detectBeats(channelData, sampleRate);
         const bpm = this.estimateBPM(beats);
         
         audioContext.close();
         
-        return { duration, bpm, beats, beatCount: beats.length };
+        return { duration, bpm, beats, beatEnergies, beatCount: beats.length };
       },
 
       detectBeats(channelData, sampleRate) {
         const beats = [];
+        const beatEnergies = [];
         const windowSize = Math.floor(sampleRate * 0.043);
         const hopSize = Math.floor(windowSize / 8);
         
@@ -463,6 +464,9 @@
           });
         }
         
+        // Find max energy for normalization
+        const maxEnergy = Math.max(...energies.map(e => e.energy));
+        
         // Smoothing
         const smoothed = [];
         const smoothWindow = 5;
@@ -473,7 +477,8 @@
           }
           smoothed.push({
             time: energies[i].time,
-            energy: sum / (smoothWindow * 2 + 1)
+            energy: sum / (smoothWindow * 2 + 1),
+            rawEnergy: energies[i].energy
           });
         }
         
@@ -482,7 +487,8 @@
         for (let i = 1; i < smoothed.length; i++) {
           derivatives.push({
             time: smoothed[i].time,
-            derivative: smoothed[i].energy - smoothed[i - 1].energy
+            derivative: smoothed[i].energy - smoothed[i - 1].energy,
+            energy: smoothed[i].rawEnergy
           });
         }
         
@@ -507,6 +513,7 @@
             
             if (isLocalMax && (current.time - lastBeat) >= minInterval) {
               beats.push(current.time);
+              beatEnergies.push(current.energy / maxEnergy); // Normalized 0-1
               lastBeat = current.time;
             }
           }
@@ -516,6 +523,7 @@
         if (beats.length < 50) {
           const lowerThreshold = sorted[Math.floor(sorted.length * 0.25)]?.derivative || 0;
           beats.length = 0;
+          beatEnergies.length = 0;
           lastBeat = -1;
           
           for (let i = 10; i < derivatives.length - 10; i++) {
@@ -532,13 +540,14 @@
               
               if (isLocalMax && (current.time - lastBeat) >= minInterval) {
                 beats.push(current.time);
+                beatEnergies.push(current.energy / maxEnergy); // Normalized 0-1
                 lastBeat = current.time;
               }
             }
           }
         }
         
-        return beats;
+        return { beats, beatEnergies };
       },
 
       estimateBPM(beats) {
@@ -559,14 +568,42 @@
     // NOTE GENERATOR MODULE  
     // ============================================
     const NoteGenerator = {
-      generate(beats, difficulty) {
+      generate(beats, beatEnergies, difficulty) {
         const notes = [];
         const settings = GAME_CONFIG.DIFFICULTY[difficulty];
+        
+        // Calculate energy threshold for multi-notes (top 15% of energies = climax)
+        const sortedEnergies = [...beatEnergies].sort((a, b) => b - a);
+        const climaxThreshold = sortedEnergies[Math.floor(sortedEnergies.length * 0.10)] || 0.8;
+        const highEnergyThreshold = sortedEnergies[Math.floor(sortedEnergies.length * 0.25)] || 0.6;
         
         beats.forEach((beatTime, index) => {
           if (settings.skipPattern > 0 && index % settings.skipPattern !== 0) return;
           
-          const notesToGenerate = settings.notesPerBeat;
+          const energy = beatEnergies[index] || 0;
+          let notesToGenerate = settings.notesPerBeat;
+          
+          // Determine multi-note based on energy levels
+          if (difficulty === 'hard') {
+            if (energy >= climaxThreshold) {
+              notesToGenerate = 4; // All 4 lanes for climax moments
+            } else if (energy >= highEnergyThreshold) {
+              notesToGenerate = 3; // 3 lanes for high energy
+            } else {
+              notesToGenerate = Math.min(2, settings.notesPerBeat);
+            }
+          } else if (difficulty === 'medium') {
+            if (energy >= climaxThreshold) {
+              notesToGenerate = 3; // 3 lanes for climax
+            } else if (energy >= highEnergyThreshold) {
+              notesToGenerate = 2; // 2 lanes for high energy
+            }
+          } else { // easy
+            if (energy >= climaxThreshold) {
+              notesToGenerate = 2; // 2 lanes for climax on easy
+            }
+          }
+          
           const usedLanes = new Set();
           
           for (let i = 0; i < notesToGenerate; i++) {
@@ -579,14 +616,17 @@
             } while (usedLanes.has(lane) && attempts < 10);
             
             usedLanes.add(lane);
-            const offset = i * 0.15;
+            
+            // Multi-notes at same time don't need offset
+            const offset = notesToGenerate > 1 ? 0 : (i * 0.15);
             
             notes.push({
               id: `${beatTime}-${lane}-${i}`,
               lane,
               time: beatTime + offset,
               hit: false,
-              missed: false
+              missed: false,
+              isMultiNote: notesToGenerate > 1
             });
           }
         });
@@ -807,7 +847,7 @@
       const [combo, setCombo] = useState(0);
       const [maxCombo, setMaxCombo] = useState(0);
       const [currentTime, setCurrentTime] = useState(0);
-      const [hitFeedback, setHitFeedback] = useState({});
+      const [hitFeedback, setHitFeedback] = useState({});  // { lane: { accuracy, time } }
       const [particles, setParticles] = useState([]);
       const [hitBursts, setHitBursts] = useState([]);
       const [perfectRings, setPerfectRings] = useState([]);
@@ -920,7 +960,7 @@
         
         try {
           const analysis = await AudioAnalyzer.analyze(file);
-          const generatedNotes = NoteGenerator.generate(analysis.beats, difficulty);
+          const generatedNotes = NoteGenerator.generate(analysis.beats, analysis.beatEnergies, difficulty);
           
           setSongData({
             duration: analysis.duration,
@@ -1041,7 +1081,8 @@
           });
           
           setStats(prev => ({ ...prev, [accuracy]: prev[accuracy] + 1 }));
-          setHitFeedback({ lane, accuracy, time: Date.now() });
+          // Update feedback for this specific lane (allows multiple lanes to light up)
+          setHitFeedback(prev => ({ ...prev, [lane]: { accuracy, time: Date.now() } }));
           createParticles(lane, accuracy);
           createHitBurst(lane);
           
@@ -1052,27 +1093,54 @@
             }
           }
           
-          const timeout = setTimeout(() => setHitFeedback({}), 300);
+          // Clear this lane's feedback after delay
+          const timeout = setTimeout(() => {
+            setHitFeedback(prev => {
+              const updated = { ...prev };
+              delete updated[lane];
+              return updated;
+            });
+          }, 200);
           effectTimeoutsRef.current.push(timeout);
           
         } else {
           setCombo(0);
-          setHitFeedback({ lane, accuracy: 'miss', time: Date.now() });
-          const timeout = setTimeout(() => setHitFeedback({}), 300);
+          setHitFeedback(prev => ({ ...prev, [lane]: { accuracy: 'miss', time: Date.now() } }));
+          const timeout = setTimeout(() => {
+            setHitFeedback(prev => {
+              const updated = { ...prev };
+              delete updated[lane];
+              return updated;
+            });
+          }, 200);
           effectTimeoutsRef.current.push(timeout);
         }
       }, [isPlaying, currentTime, notes, combo, createParticles, createHitBurst, createPerfectRing, createStarBurst]);
 
-      // Keyboard handler
+      // Keyboard handler - track pressed keys to allow multiple simultaneous presses
       useEffect(() => {
+        const pressedKeys = new Set();
+        
         const handleKeyDown = (e) => {
           if (!LANE_KEYS[e.key]) return;
           e.preventDefault();
+          // Prevent key repeat from triggering multiple times
+          if (pressedKeys.has(e.key)) return;
+          pressedKeys.add(e.key);
           handleLanePress(LANE_KEYS[e.key]);
         };
         
+        const handleKeyUp = (e) => {
+          if (!LANE_KEYS[e.key]) return;
+          pressedKeys.delete(e.key);
+        };
+        
         window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
+        window.addEventListener('keyup', handleKeyUp);
+        return () => {
+          window.removeEventListener('keydown', handleKeyDown);
+          window.removeEventListener('keyup', handleKeyUp);
+        };
       }, [handleLanePress]);
 
       // Cleanup on unmount
@@ -1312,12 +1380,12 @@
                         {/* Lane button */}
                         <div className="absolute bottom-6 left-0 right-0 flex justify-center z-10">
                           <div className={`w-20 h-20 rounded-xl flex items-center justify-center text-4xl font-bold transition-all duration-75 ${
-                            hitFeedback.lane === lane && Date.now() - hitFeedback.time < 200
-                              ? hitFeedback.accuracy === 'miss' 
+                            hitFeedback[lane] && Date.now() - hitFeedback[lane].time < 200
+                              ? hitFeedback[lane].accuracy === 'miss' 
                                 ? 'bg-red-500 scale-110 animate-shake'
-                                : hitFeedback.accuracy === 'perfect'
+                                : hitFeedback[lane].accuracy === 'perfect'
                                 ? 'bg-yellow-400 scale-125 lane-glow text-neutral-900'
-                                : hitFeedback.accuracy === 'good'
+                                : hitFeedback[lane].accuracy === 'good'
                                 ? 'bg-green-500 scale-120 lane-glow'
                                 : 'bg-blue-500 scale-115 lane-glow'
                               : 'bg-neutral-800 border-2 border-neutral-700'
@@ -1327,7 +1395,7 @@
                         </div>
                         
                         {/* Hit flash effect */}
-                        {hitFeedback.lane === lane && hitFeedback.accuracy !== 'miss' && Date.now() - hitFeedback.time < 200 && (
+                        {hitFeedback[lane] && hitFeedback[lane].accuracy !== 'miss' && Date.now() - hitFeedback[lane].time < 200 && (
                           <div className="hit-flash" />
                         )}
 
@@ -1378,24 +1446,28 @@
                     <TouchControls onLanePress={handleLanePress} theme={theme} />
                   )}
 
-                  {/* Accuracy feedback */}
-                  {hitFeedback.accuracy && Date.now() - hitFeedback.time < 250 && (
-                    <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none z-20">
-                      <div className={`text-5xl font-black animate-slide-in ${
-                        hitFeedback.accuracy === 'perfect' ? 'text-yellow-400' :
-                        hitFeedback.accuracy === 'good' ? 'text-green-400' :
-                        hitFeedback.accuracy === 'ok' ? 'text-blue-400' :
-                        'text-red-400'
-                      }`} style={{
-                        textShadow: '0 0 24px currentColor'
-                      }}>
-                        {hitFeedback.accuracy === 'perfect' ? 'PERFECT' :
-                         hitFeedback.accuracy === 'good' ? 'GOOD' :
-                         hitFeedback.accuracy === 'ok' ? 'OK' :
-                         'MISS'}
+                  {/* Accuracy feedback - show most recent hit */}
+                  {(() => {
+                    const recentHit = Object.values(hitFeedback).find(fb => Date.now() - fb.time < 250);
+                    if (!recentHit) return null;
+                    return (
+                      <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none z-20">
+                        <div className={`text-5xl font-black animate-slide-in ${
+                          recentHit.accuracy === 'perfect' ? 'text-yellow-400' :
+                          recentHit.accuracy === 'good' ? 'text-green-400' :
+                          recentHit.accuracy === 'ok' ? 'text-blue-400' :
+                          'text-red-400'
+                        }`} style={{
+                          textShadow: '0 0 24px currentColor'
+                        }}>
+                          {recentHit.accuracy === 'perfect' ? 'PERFECT' :
+                           recentHit.accuracy === 'good' ? 'GOOD' :
+                           recentHit.accuracy === 'ok' ? 'OK' :
+                           'MISS'}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    );
+                  })()}
 
                   {/* Combo display */}
                   {combo >= 10 && isPlaying && (
