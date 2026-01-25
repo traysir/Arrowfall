@@ -6,11 +6,6 @@
   <meta name="description" content="Arrowfall - A rhythm game that analyzes your music and generates beatmaps">
   <meta name="theme-color" content="#0f0f0f">
   <title>Arrowfall</title>
-  
-  <!-- Google AdSense -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
-       crossorigin="anonymous"></script>
-  
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -332,80 +327,6 @@
 
     @media (max-width: 480px) {
       .title-main { font-size: 2.75rem; }
-    }
-
-    /* Monetization Styles */
-    .support-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 0.875rem;
-      transition: all 0.2s ease;
-      text-decoration: none;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    
-    .support-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-    
-    .kofi-btn {
-      background: linear-gradient(135deg, #FF5E5B 0%, #FF1744 100%);
-      color: white;
-    }
-    
-    .patreon-btn {
-      background: linear-gradient(135deg, #FF424D 0%, #FF424D 100%);
-      color: white;
-    }
-    
-    .buymeacoffee-btn {
-      background: linear-gradient(135deg, #FFDD00 0%, #FFA500 100%);
-      color: #000;
-    }
-    
-    .ad-container {
-      margin: 1rem auto;
-      text-align: center;
-      min-height: 90px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 8px;
-    }
-    
-    .support-footer {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: rgba(10, 10, 10, 0.95);
-      backdrop-filter: blur(10px);
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 0.75rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 1rem;
-      z-index: 50;
-      flex-wrap: wrap;
-    }
-    
-    @media (max-width: 768px) {
-      .support-footer {
-        padding: 0.5rem;
-        gap: 0.5rem;
-      }
-      .support-btn {
-        font-size: 0.75rem;
-        padding: 0.4rem 0.8rem;
-      }
     }
   </style>
 </head>
@@ -908,50 +829,7 @@
           <p className="text-center text-neutral-600 text-sm mt-8">
             Automatically analyzes your music to generate beatmaps
           </p>
-          
-          {/* Support Section */}
-          <div className="mt-12 p-6 card-elevated text-center">
-            <h3 className="text-lg font-semibold mb-3" style={{color: theme.primary}}>💖 Support This Free Game</h3>
-            <p className="text-sm text-neutral-400 mb-4">Help keep Arrowfall free and ad-supported!</p>
-            <div className="flex flex-wrap gap-3 justify-center">
-              <a href="https://ko-fi.com/YOURNAME" target="_blank" rel="noopener noreferrer" className="support-btn kofi-btn">
-                <span>☕</span> Ko-fi
-              </a>
-              <a href="https://www.patreon.com/YOURNAME" target="_blank" rel="noopener noreferrer" className="support-btn patreon-btn">
-                <span>🎮</span> Patreon
-              </a>
-              <a href="https://www.buymeacoffee.com/YOURNAME" target="_blank" rel="noopener noreferrer" className="support-btn buymeacoffee-btn">
-                <span>☕</span> Buy Me a Coffee
-              </a>
-            </div>
-            <p className="text-xs text-neutral-500 mt-3">Your support helps cover hosting and development costs</p>
-          </div>
-          
-          {/* Ad Space - Top Banner */}
-          <div className="ad-container mt-8">
-            {/* Replace this div with your actual AdSense code */}
-            <ins className="adsbygoogle"
-                 style={{display: 'block'}}
-                 data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-                 data-ad-slot="XXXXXXXXXX"
-                 data-ad-format="auto"
-                 data-full-width-responsive="true"></ins>
-          </div>
         </div>
-      </div>
-    );
-
-    // ============================================
-    // SUPPORT FOOTER COMPONENT
-    // ============================================
-    const SupportFooter = ({ theme }) => (
-      <div className="support-footer">
-        <span className="text-xs text-neutral-400">Enjoying Arrowfall?</span>
-        <a href="https://ko-fi.com/YOURNAME" target="_blank" rel="noopener noreferrer" className="support-btn kofi-btn">
-          ☕ Support
-        </a>
-        <span className="text-xs text-neutral-500">|</span>
-        <a href="#" className="text-xs text-neutral-400 hover:text-white transition-colors">Remove Ads ($2.99)</a>
       </div>
     );
 
@@ -1390,16 +1268,6 @@
                 <p className="text-center text-neutral-600 text-xs mt-4">
                   AI analyzes your music to create synchronized beatmaps
                 </p>
-                
-                {/* Ad Space - Below Upload */}
-                <div className="ad-container mt-6">
-                  <ins className="adsbygoogle"
-                       style={{display: 'block'}}
-                       data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-                       data-ad-slot="XXXXXXXXXX"
-                       data-ad-format="auto"
-                       data-full-width-responsive="true"></ins>
-                </div>
               </div>
             )}
 
@@ -1640,9 +1508,6 @@
               </div>
             )}
           </div>
-          
-          {/* Support Footer */}
-          <SupportFooter theme={theme} />
         </div>
       );
     };
@@ -1650,11 +1515,6 @@
     // Mount the app
     const root = ReactDOM.createRoot(document.getElementById('app'));
     root.render(<RhythmGame />);
-    
-    // Initialize AdSense ads after mounting
-    if (window.adsbygoogle) {
-      (adsbygoogle = window.adsbygoogle || []).push({});
-    }
   </script>
 </body>
 </html>
