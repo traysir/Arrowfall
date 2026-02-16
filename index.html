@@ -1721,7 +1721,10 @@
             
             {/* Tagline */}
             <div className="landing-tagline mb-10">
-              drop your mp3. hit the beats. chase the score.
+              <span style={{fontSize:'1.25rem',color:'rgba(255,255,255,0.75)',letterSpacing:'-0.02em',lineHeight:1.3}}>
+                The ultimate rhythm game <br/>
+                Play any song you upload!
+              </span>
             </div>
             
             {/* Difficulty + CTA row */}
@@ -1747,7 +1750,7 @@
               {[
                 { val: '6', label: 'BUILT-IN TRACKS' },
                 { val: '∞', label: 'YOUR MP3s' },
-                { val: '0ms', label: 'LATENCY' }
+               
               ].map(s => (
                 <div key={s.label}>
                   <div style={{fontSize:'1.5rem',fontWeight:900,color:'white',lineHeight:1}}>{s.val}</div>
