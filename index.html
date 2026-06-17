@@ -23,10 +23,44 @@
   <meta name="apple-mobile-web-app-title" content="Arrowfall">
   
   <title>Arrowfall - Free Unblocked Rhythm Game | Play at School & Work</title>
+
+  <!-- Favicon (inline SVG, no extra file needed) -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f0f17'/%3E%3Cpath d='M32 10 L50 34 L38 34 L38 54 L26 54 L26 34 L14 34 Z' fill='%23ff006e' transform='rotate(180 32 32)'/%3E%3C/svg%3E">
+
+  <!-- Structured data: helps Google show this as a game in search results -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoGame",
+    "name": "Arrowfall",
+    "description": "Free browser rhythm game. Play built-in songs or upload your own music — beat detection generates the chart automatically. No download required.",
+    "genre": ["Rhythm", "Music", "Arcade"],
+    "gamePlatform": "Web Browser",
+    "applicationCategory": "Game",
+    "operatingSystem": "Any",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "playMode": "SinglePlayer"
+  }
+  </script>
+
+  <!-- ============================================================
+       GOOGLE ADSENSE — SETUP REQUIRED
+       1. Get approved at https://adsense.google.com (you need a
+          privacy policy — one is built into this page's footer).
+       2. Replace ca-pub-XXXXXXXXXXXXXXXX below with your publisher ID
+          and uncomment the script tag.
+       3. In AD_CONFIG (top of the game script), set enabled: true,
+          paste your publisher ID, and create 2-3 display ad units in
+          AdSense, then paste their slot IDs.
+       ============================================================ -->
+  <!--
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+  -->
+
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&family=Unbounded:wght@500;700;900&display=swap" rel="stylesheet">
   <style>
     :root {
       --glow-color: rgba(236, 72, 153, 0.4);
@@ -207,24 +241,137 @@
     }
 
     /* ===== NEW LANDING PAGE STYLES ===== */
-    @keyframes glitch1 {
-      0%, 100% { clip-path: inset(0 0 0 0); transform: translate(0); }
-      20% { clip-path: inset(20% 0 60% 0); transform: translate(-3px, 2px); }
-      40% { clip-path: inset(40% 0 30% 0); transform: translate(3px, -1px); }
-      60% { clip-path: inset(60% 0 10% 0); transform: translate(-2px, 1px); }
-      80% { clip-path: inset(10% 0 70% 0); transform: translate(2px, -2px); }
+    /* ===== v3 VISUAL SYSTEM ===== */
+    .display-font { font-family: 'Unbounded', 'Outfit', sans-serif; }
+
+    .eyebrow {
+      font-size: 0.68rem; font-weight: 700;
+      letter-spacing: 3px; text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
     }
-    @keyframes glitch2 {
-      0%, 100% { clip-path: inset(0 0 0 0); transform: translate(0); }
-      20% { clip-path: inset(60% 0 10% 0); transform: translate(3px, -2px); }
-      40% { clip-path: inset(10% 0 80% 0); transform: translate(-3px, 1px); }
-      60% { clip-path: inset(30% 0 40% 0); transform: translate(2px, 2px); }
-      80% { clip-path: inset(70% 0 5% 0); transform: translate(-2px, -1px); }
+
+    .nav-bar {
+      position: sticky; top: 0; z-index: 60;
+      background: rgba(5,5,8,0.8);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
     }
-    @keyframes scanlines {
-      0% { background-position: 0 0; }
-      100% { background-position: 0 4px; }
+    .nav-link {
+      font-size: 0.8rem; font-weight: 600;
+      color: rgba(255,255,255,0.5);
+      padding: 6px 12px; border-radius: 10px;
+      transition: color 0.15s, background 0.15s;
+      cursor: pointer; background: none; border: none;
     }
+    .nav-link:hover { color: white; background: rgba(255,255,255,0.05); }
+
+    .cta-primary {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 14px 32px; border-radius: 14px;
+      font-weight: 800; font-size: 1rem; color: white;
+      background: linear-gradient(135deg, #ff006e, #d6336c);
+      box-shadow: 0 8px 32px rgba(255,0,110,0.35), inset 0 1px 0 rgba(255,255,255,0.2);
+      border: none; cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .cta-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(255,0,110,0.45), inset 0 1px 0 rgba(255,255,255,0.2); }
+    .cta-primary:active { transform: translateY(0); }
+    .cta-ghost {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 14px 28px; border-radius: 14px;
+      font-weight: 700; font-size: 1rem;
+      color: rgba(255,255,255,0.8);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.12);
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, transform 0.15s;
+    }
+    .cta-ghost:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.25); transform: translateY(-2px); }
+
+    .lib-card {
+      position: relative; text-align: left; cursor: pointer;
+      background: var(--card-bg, rgba(255,255,255,0.025));
+      border: 1px solid var(--card-border, rgba(255,255,255,0.07));
+      border-radius: 18px; padding: 1.25rem;
+      transition: transform 0.2s cubic-bezier(0.16,1,0.3,1), border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    }
+    .lib-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--card-accent, rgba(255,255,255,0.2));
+      box-shadow: 0 16px 40px rgba(0,0,0,0.4), 0 0 24px var(--card-glow, transparent);
+    }
+    .lib-card:focus-visible { outline: 2px solid white; outline-offset: 2px; }
+    .lib-card .lib-play {
+      position: absolute; top: 1rem; right: 1rem;
+      width: 38px; height: 38px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.4);
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+    .lib-card:hover .lib-play {
+      background: var(--card-accent, #ff006e);
+      border-color: transparent;
+      color: white;
+    }
+
+    .genre-chip {
+      display: flex; align-items: center; gap: 12px;
+      padding: 1rem 1.25rem; border-radius: 16px;
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(255,255,255,0.07);
+      cursor: pointer; text-align: left;
+      transition: transform 0.2s cubic-bezier(0.16,1,0.3,1), border-color 0.2s, background 0.2s;
+    }
+    .genre-chip:hover {
+      transform: translateY(-3px);
+      border-color: var(--chip-accent, rgba(255,255,255,0.2));
+      background: rgba(255,255,255,0.045);
+    }
+    .genre-chip:focus-visible { outline: 2px solid white; outline-offset: 2px; }
+
+    .icon-tile {
+      width: 44px; height: 44px; border-radius: 13px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    @keyframes previewDrift {
+      from { transform: translateY(-7px); }
+      to { transform: translateY(7px); }
+    }
+    .preview-drift { animation: previewDrift 2.6s ease-in-out infinite alternate; }
+
+
+
+    /* Light sweep across tiles on hover */
+    .song-tile::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -80%;
+      width: 60%; height: 100%;
+      background: linear-gradient(105deg, transparent, rgba(255,255,255,0.07), transparent);
+      transform: skewX(-20deg);
+      transition: left 0.45s ease;
+      pointer-events: none;
+    }
+    .song-tile:hover::before { left: 120%; }
+
+    /* In-game judgment beam at the true hit line */
+    .hit-beam {
+      position: absolute;
+      left: 0; right: 0;
+      height: 2px;
+      pointer-events: none;
+      z-index: 5;
+      opacity: 0.6;
+      background: linear-gradient(90deg, transparent, var(--beam-color, #ff006e) 15%, var(--beam-color, #ff006e) 85%, transparent);
+      box-shadow: 0 0 12px var(--beam-glow, rgba(255,0,110,0.5));
+    }
+
+
     @keyframes heroTextReveal {
       0% { transform: translateY(60px) skewY(4deg); opacity: 0; filter: blur(8px); }
       100% { transform: translateY(0) skewY(0); opacity: 1; filter: blur(0); }
@@ -247,41 +394,16 @@
       24% { opacity: 1; }
       100% { opacity: 1; }
     }
-    @keyframes marquee {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
 
     .landing-hero-title {
-      font-size: clamp(4rem, 12vw, 10rem);
+      font-family: 'Unbounded', 'Outfit', sans-serif;
+      font-size: clamp(2.6rem, 9vw, 7.5rem);
       font-weight: 900;
-      line-height: 0.85;
-      letter-spacing: -6px;
+      line-height: 0.95;
+      letter-spacing: -2px;
       color: white;
       position: relative;
       animation: heroTextReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
-    }
-    .landing-hero-title::before,
-    .landing-hero-title::after {
-      content: attr(data-text);
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      pointer-events: none;
-    }
-    .landing-hero-title::before {
-      color: #ff006e;
-      animation: glitch1 4s infinite;
-      opacity: 0.6;
-    }
-    .landing-hero-title::after {
-      color: #00f0ff;
-      animation: glitch2 4s infinite 0.1s;
-      opacity: 0.6;
-    }
-    .landing-hero-title:hover::before,
-    .landing-hero-title:hover::after {
-      animation-duration: 0.3s;
     }
 
     .landing-tagline {
@@ -297,51 +419,7 @@
       opacity: 0.5;
     }
 
-    .landing-scanlines {
-      position: fixed; inset: 0;
-      background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        rgba(0,0,0,0.08) 2px,
-        rgba(0,0,0,0.08) 4px
-      );
-      pointer-events: none;
-      z-index: 100;
-      animation: scanlines 0.1s linear infinite;
-    }
 
-    .landing-noise {
-      position: fixed; inset: -50%;
-      width: 200%; height: 200%;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 99;
-    }
-
-    .play-btn-landing {
-      position: relative;
-      padding: 16px 48px;
-      font-size: 1.1rem;
-      font-weight: 800;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: #000;
-      background: #ff006e;
-      border: none;
-      cursor: pointer;
-      clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
-      transition: all 0.2s;
-    }
-    .play-btn-landing:hover {
-      background: #ff3388;
-      transform: translate(-2px, -2px);
-      box-shadow: 4px 4px 0 #00f0ff;
-    }
-    .play-btn-landing:active {
-      transform: translate(0, 0);
-      box-shadow: none;
-    }
 
     .song-tile {
       position: relative;
@@ -368,63 +446,8 @@
       width: 100%;
     }
 
-    .genre-pill {
-      padding: 8px 20px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      border: 1px solid rgba(255,255,255,0.1);
-      background: transparent;
-      color: rgba(255,255,255,0.5);
-      cursor: pointer;
-      transition: all 0.2s;
-      clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
-    }
-    .genre-pill:hover {
-      border-color: rgba(255,255,255,0.3);
-      color: white;
-    }
-    .genre-pill.active {
-      border-color: #ff006e;
-      color: #ff006e;
-      background: rgba(255,0,110,0.1);
-    }
 
-    .corner-decor {
-      position: absolute;
-      width: 60px; height: 60px;
-      pointer-events: none;
-    }
-    .corner-decor::before, .corner-decor::after {
-      content: '';
-      position: absolute;
-      background: rgba(255,0,110,0.3);
-    }
-    .corner-decor.tl { top: 0; left: 0; }
-    .corner-decor.tl::before { top: 0; left: 0; width: 100%; height: 1px; }
-    .corner-decor.tl::after { top: 0; left: 0; width: 1px; height: 100%; }
-    .corner-decor.tr { top: 0; right: 0; }
-    .corner-decor.tr::before { top: 0; right: 0; width: 100%; height: 1px; }
-    .corner-decor.tr::after { top: 0; right: 0; width: 1px; height: 100%; }
-    .corner-decor.bl { bottom: 0; left: 0; }
-    .corner-decor.bl::before { bottom: 0; left: 0; width: 100%; height: 1px; }
-    .corner-decor.bl::after { bottom: 0; left: 0; width: 1px; height: 100%; }
-    .corner-decor.br { bottom: 0; right: 0; }
-    .corner-decor.br::before { bottom: 0; right: 0; width: 100%; height: 1px; }
-    .corner-decor.br::after { bottom: 0; right: 0; width: 1px; height: 100%; }
 
-    .marquee-track {
-      overflow: hidden;
-      white-space: nowrap;
-    }
-    .marquee-content {
-      display: inline-block;
-      animation: marquee 20s linear infinite;
-    }
-    .marquee-track:hover .marquee-content {
-      animation-play-state: paused;
-    }
 
     .diff-btn {
       padding: 8px 24px;
@@ -494,7 +517,7 @@
     }
 
     .stat-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); }
-    .stat-value { font-size: 1.5rem; font-weight: 800; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+    .stat-value { font-family: 'Unbounded', 'Outfit', sans-serif; font-size: 1.2rem; font-weight: 700; color: var(--text-primary); font-variant-numeric: tabular-nums; letter-spacing: -0.5px; }
 
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
@@ -558,11 +581,198 @@
     const { useState, useRef, useEffect, useCallback, useMemo } = React;
 
     // ============================================
+    // MONETIZATION — AD CONFIG
+    // Set enabled: true and fill in your AdSense IDs once approved.
+    // Ads render nothing while disabled, so local dev stays clean.
+    // ============================================
+    const AD_CONFIG = {
+      enabled: false,                       // flip to true after AdSense approval
+      client: 'ca-pub-XXXXXXXXXXXXXXXX',    // your publisher ID
+      slots: {
+        landingBanner: '0000000000',        // responsive display unit (landing page)
+        resultsRect:   '0000000000',        // rectangle unit (results screen)
+        adBreak:       '0000000000'         // rectangle unit (between-song ad break)
+      },
+      adBreakEverySongs: 3                  // full-screen ad break frequency
+    };
+
+    const AdSlot = ({ slot, style, className }) => {
+      const ref = React.useRef(null);
+      React.useEffect(() => {
+        if (!AD_CONFIG.enabled || !window.adsbygoogle) return;
+        try { (window.adsbygoogle = window.adsbygoogle || []).push({}); }
+        catch (e) { /* ad blocked or already filled */ }
+      }, []);
+      if (!AD_CONFIG.enabled) return null;
+      return (
+        <div className={className} style={{textAlign: 'center', ...style}}>
+          <div style={{fontSize:'0.55rem',letterSpacing:'2px',color:'rgba(255,255,255,0.2)',textTransform:'uppercase',fontFamily:'Courier New, monospace',marginBottom:'4px'}}>Advertisement</div>
+          <ins ref={ref} className="adsbygoogle"
+            style={{display:'block', minHeight: '90px'}}
+            data-ad-client={AD_CONFIG.client}
+            data-ad-slot={AD_CONFIG.slots[slot]}
+            data-ad-format="auto"
+            data-full-width-responsive="true"></ins>
+        </div>
+      );
+    };
+
+    // ============================================
+    // ICON SYSTEM — inline SVGs replace all emoji
+    // ============================================
+    const ICON_PATHS = {
+      play:     'M8 5v14l11-7z',
+      pause:    'M6 5h4v14H6zM14 5h4v14h-4z',
+      stop:     'M6 6h12v12H6z',
+      restart:  'M12 5V2L7 6.5 12 11V8a5 5 0 1 1-5 5H5a7 7 0 1 0 7-8z',
+      share:    'M18 16.1c-.8 0-1.5.3-2 .8l-7.1-4.2c.1-.2.1-.5.1-.7s0-.5-.1-.7L16 7.2c.5.5 1.2.8 2 .8a3 3 0 1 0-3-3c0 .2 0 .5.1.7L8 9.8a3 3 0 1 0 0 4.4l7.1 4.2c-.1.2-.1.4-.1.6a3 3 0 1 0 3-2.9z',
+      settings: 'M19.4 13a7.8 7.8 0 0 0 .1-1 7.8 7.8 0 0 0-.1-1l2.1-1.7a.5.5 0 0 0 .1-.6l-2-3.5a.5.5 0 0 0-.6-.2l-2.5 1a7.6 7.6 0 0 0-1.7-1l-.4-2.6a.5.5 0 0 0-.5-.4h-4a.5.5 0 0 0-.5.4L9 5a7.6 7.6 0 0 0-1.7 1l-2.5-1a.5.5 0 0 0-.6.2l-2 3.5a.5.5 0 0 0 .1.6L4.5 11a7.8 7.8 0 0 0 0 2l-2.1 1.7a.5.5 0 0 0-.1.6l2 3.5c.1.2.4.3.6.2l2.5-1a7.6 7.6 0 0 0 1.7 1l.4 2.6c0 .2.2.4.5.4h4c.2 0 .4-.2.5-.4l.4-2.6a7.6 7.6 0 0 0 1.7-1l2.5 1c.2.1.5 0 .6-.2l2-3.5a.5.5 0 0 0-.1-.6L19.4 13zM12 15.5A3.5 3.5 0 1 1 12 8.5a3.5 3.5 0 0 1 0 7z',
+      upload:   'M12 3l5 5h-3v6h-4V8H7l5-5zM5 18h14v2H5z',
+      music:    'M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z',
+      notes:    'M21 3v10.55a4 4 0 1 0 2 3.45V3h-2zM9 6v10.55A4 4 0 1 0 11 20V8h6V6H9z',
+      disc:     'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 13a3 3 0 1 1 0-6 3 3 0 0 1 0 6z',
+      trophy:   'M19 5h-2V3H7v2H5a2 2 0 0 0-2 2v2a4 4 0 0 0 4 4h.4A6 6 0 0 0 11 16.9V19H8v2h8v-2h-3v-2.1a6 6 0 0 0 3.6-3.9H17a4 4 0 0 0 4-4V7a2 2 0 0 0-2-2zM5 9V7h2v4a2 2 0 0 1-2-2zm14 0a2 2 0 0 1-2 2V7h2v2z',
+      flame:    'M13.5 1.5s.8 2.7.8 4.9c0 2.1-1.4 3.8-3.5 3.8S7.3 8.5 7.3 6.4l0-.4C5.2 8.5 4 11.6 4 14a8 8 0 1 0 16 0c0-5.5-4.4-9.7-6.5-12.5zM12 20a4 4 0 0 1-4-4c0-1.1.4-2.2 1.2-3 .5 1.2 1.7 2 3 2 2 0 3.3-1.4 3.6-3.3.7 1.3 1.2 2.8 1.2 4.3a4 4 0 0 1-5 4z',
+      target:   'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 4a6 6 0 1 1 0 12 6 6 0 0 1 0-12zm0 4a2 2 0 1 0 0 4 2 2 0 0 0 0-4z',
+      star:     'M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z',
+      check:    'M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z',
+      crown:    'M3 7l4.5 3.5L12 4l4.5 6.5L21 7l-1.6 11H4.6L3 7zm3.3 9h11.4l.7-5-2.8 2.1L12 8l-3.6 5.1L5.6 11l.7 5z',
+      bolt:     'M11 21h-1l1-7H7.5c-.6 0-.6-.3-.4-.7L13 3h1l-1 7h3.5c.5 0 .6.3.5.5L11 21z',
+      mic:      'M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z',
+      heart:    'M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z',
+      pick:     'M12 22c-3.2-2.6-7-7.7-7-12a7 7 0 0 1 14 0c0 4.3-3.8 9.4-7 12z',
+      skull:    'M12 2C7 2 3 5.9 3 10.7c0 2.9 1.5 5.4 3.8 6.9V20a1 1 0 0 0 1 1H9v-2h2v2h2v-2h2v2h1.2a1 1 0 0 0 1-1v-2.4A8.4 8.4 0 0 0 21 10.7C21 5.9 17 2 12 2zM8.5 12.5a1.8 1.8 0 1 1 0-3.6 1.8 1.8 0 0 1 0 3.6zm7 0a1.8 1.8 0 1 1 0-3.6 1.8 1.8 0 0 1 0 3.6z',
+      medal:    'M12 7a6 6 0 1 0 0 12 6 6 0 0 0 0-12zm0 3l.9 1.9 2.1.3-1.5 1.4.4 2.1-1.9-1-1.9 1 .4-2.1-1.5-1.4 2.1-.3L12 10zM7 2h4L8.6 6.5 7 2zm10 0h-4l2.4 4.5L17 2z',
+      flag:     'M6 2v20h2v-8h10l-2-4 2-4H8V2H6z',
+      calendar: 'M7 2v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2H7zM5 10h14v10H5V10z',
+      chart:    'M4 20h16v-2H4v2zM6 16h3V8H6v8zm5 0h3V4h-3v12zm5 0h3v-6h-3v6z',
+      clock:    'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 5h-2v6l5.2 3.1 1-1.6-4.2-2.5V7z',
+      close:    'M19 6.4L17.6 5 12 10.6 6.4 5 5 6.4 10.6 12 5 17.6 6.4 19 12 13.4 17.6 19 19 17.6 13.4 12z'
+    };
+
+    const Icon = ({ name, size = 20, color = 'currentColor', className = '', style = {} }) => (
+      <svg viewBox="0 0 24 24" width={size} height={size} className={className}
+        style={{display: 'inline-block', verticalAlign: 'middle', flexShrink: 0, ...style}}
+        fill={color} aria-hidden="true">
+        <path fillRule="evenodd" d={ICON_PATHS[name] || ICON_PATHS.music} />
+      </svg>
+    );
+
+    // Directional arrow used for notes, receptors, and touch controls
+    const LaneIcon = ({ dir, label }) => {
+      const rot = { up: 0, right: 90, down: 180, left: 270 }[dir] || 0;
+      return (
+        <span style={{position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%'}}>
+          <svg viewBox="0 0 24 24" style={{width: '58%', height: '58%', transform: `rotate(${rot}deg)`}} fill="currentColor" aria-hidden="true">
+            <path d="M12 2.5L20.5 12h-4.7v9.5H8.2V12H3.5L12 2.5z" />
+          </svg>
+          {label && (
+            <span style={{position: 'absolute', bottom: '6%', right: '10%', fontSize: '0.5em', fontWeight: 800, opacity: 0.9, lineHeight: 1}}>{label}</span>
+          )}
+        </span>
+      );
+    };
+
+    const Logo = ({ size = 30 }) => (
+      <svg viewBox="0 0 64 64" width={size} height={size} aria-hidden="true" style={{flexShrink: 0}}>
+        <rect width="64" height="64" rx="14" fill="#13131c" stroke="rgba(255,255,255,0.1)" strokeWidth="2"/>
+        <path d="M32 54 L14 30 H26 V10 H38 V30 H50 Z" fill="#ff006e"/>
+      </svg>
+    );
+
+    // ============================================
+    // PLAYER PROFILE — XP, levels, streaks, lifetime stats
+    // ============================================
+    const Profile = {
+      defaults: {
+        xp: 0, songsPlayed: 0, totalNotes: 0, totalPerfect: 0,
+        bestCombo: 0, bestScore: 0, customSongsPlayed: 0,
+        playedSongIds: [], achievements: [],
+        streak: 0, lastPlayDate: null,
+        dailyDoneDate: null
+      },
+      get() {
+        try { return { ...this.defaults, ...JSON.parse(localStorage.getItem('arrowfall_profile') || '{}') }; }
+        catch { return { ...this.defaults }; }
+      },
+      save(p) { localStorage.setItem('arrowfall_profile', JSON.stringify(p)); },
+      todayKey() { const d = new Date(); return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`; },
+      yesterdayKey() { const d = new Date(Date.now() - 86400000); return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`; }
+    };
+
+    // Level curve: each level needs a bit more XP than the last
+    const xpForLevel = (level) => 400 + (level - 1) * 200;
+    const levelFromXP = (xp) => {
+      let level = 1, remaining = xp;
+      while (remaining >= xpForLevel(level)) { remaining -= xpForLevel(level); level++; }
+      return { level, intoLevel: remaining, needed: xpForLevel(level) };
+    };
+    const LEVEL_TITLES = ['Rookie', 'Beat Cadet', 'Note Hunter', 'Combo Artist', 'Rhythm Adept', 'Lane Slayer', 'Beat Surgeon', 'Sound Reaper', 'Tempo Lord', 'Arrowfall Legend'];
+    const titleForLevel = (level) => LEVEL_TITLES[Math.min(LEVEL_TITLES.length - 1, Math.floor((level - 1) / 3))];
+
+    // ============================================
+    // ACHIEVEMENTS
+    // ============================================
+    const ACHIEVEMENTS = [
+      { id: 'first_song',   icon: 'music', name: 'First Drop',      desc: 'Finish your first song' },
+      { id: 'ten_songs',    icon: 'notes', name: 'Regular',          desc: 'Finish 10 songs' },
+      { id: 'fifty_songs',  icon: 'disc', name: 'Resident DJ',      desc: 'Finish 50 songs' },
+      { id: 'combo_50',     icon: 'flame', name: 'Heating Up',       desc: 'Hit a 50 combo' },
+      { id: 'combo_100',    icon: 'star', name: 'Unstoppable',      desc: 'Hit a 100 combo' },
+      { id: 'combo_250',    icon: 'crown', name: 'Godlike',          desc: 'Hit a 250 combo' },
+      { id: 's_rank',       icon: 'trophy', name: 'S Tier',           desc: 'Earn an S rank' },
+      { id: 's_plus',       icon: 'bolt', name: 'Flawless Form',    desc: 'Earn an S+ rank' },
+      { id: 'full_combo',   icon: 'medal', name: 'Full Combo',       desc: 'Finish a song with zero misses (50+ notes)' },
+      { id: 'hard_s',       icon: 'skull', name: 'No Fear',          desc: 'S rank on Hard difficulty' },
+      { id: 'score_100k',   icon: 'chart', name: 'Six Figures',      desc: 'Score 100,000+ in one song' },
+      { id: 'upload_first', icon: 'upload', name: 'Your Soundtrack',  desc: 'Play an uploaded track' },
+      { id: 'all_builtin',  icon: 'flag', name: 'Completionist',    desc: 'Play every built-in song' },
+      { id: 'streak_3',     icon: 'flame', name: 'Habit Forming',    desc: '3-day play streak' },
+      { id: 'streak_7',     icon: 'calendar', name: 'Locked In',        desc: '7-day play streak' },
+      { id: 'daily_first',  icon: 'target', name: 'Challenger',       desc: 'Complete a Daily Challenge' }
+    ];
+
+    const checkAchievements = (profile, run) => {
+      const unlocked = [];
+      const has = (id) => profile.achievements.includes(id) || unlocked.some(a => a.id === id);
+      const grant = (id) => { if (!has(id)) { const a = ACHIEVEMENTS.find(x => x.id === id); if (a) unlocked.push(a); } };
+
+      if (profile.songsPlayed >= 1) grant('first_song');
+      if (profile.songsPlayed >= 10) grant('ten_songs');
+      if (profile.songsPlayed >= 50) grant('fifty_songs');
+      if (run.maxCombo >= 50) grant('combo_50');
+      if (run.maxCombo >= 100) grant('combo_100');
+      if (run.maxCombo >= 250) grant('combo_250');
+      if (run.grade === 'S' || run.grade === 'S+') grant('s_rank');
+      if (run.grade === 'S+') grant('s_plus');
+      if (run.totalNotes >= 50 && run.miss === 0) grant('full_combo');
+      if (run.difficulty === 'hard' && (run.grade === 'S' || run.grade === 'S+')) grant('hard_s');
+      if (run.score >= 100000) grant('score_100k');
+      if (run.isCustom) grant('upload_first');
+      if (BUILT_IN_SONGS.every(s => profile.playedSongIds.includes(s.id))) grant('all_builtin');
+      if (profile.streak >= 3) grant('streak_3');
+      if (profile.streak >= 7) grant('streak_7');
+      if (run.isDaily) grant('daily_first');
+      return unlocked;
+    };
+
+    // ============================================
+    // DAILY CHALLENGE — deterministic song + difficulty per day, 2x XP
+    // ============================================
+    const getDailyChallenge = () => {
+      const d = new Date();
+      const seed = d.getFullYear() * 372 + d.getMonth() * 31 + d.getDate();
+      const song = BUILT_IN_SONGS[seed % BUILT_IN_SONGS.length];
+      const diff = ['easy', 'medium', 'hard'][seed % 3];
+      return { song, difficulty: diff };
+    };
+
+    // ============================================
     // CONFIGURATION
     // ============================================
     const GENRE_THEMES = {
       pop: {
-        name: 'Pop', emoji: '💖', description: 'Bright & Catchy',
+        name: 'Pop', icon: 'heart', description: 'Bright & Catchy',
         bg: 'from-neutral-950 via-neutral-900 to-neutral-950',
         primary: '#ec4899', secondary: '#d946ef', accent: 'pink-500',
         glow: 'rgba(236, 72, 153, 0.35)',
@@ -573,7 +783,7 @@
         vizColors: ['#ec4899', '#d946ef', '#f472b6']
       },
       rock: {
-        name: 'Rock', emoji: '🎸', description: 'Classic & Powerful',
+        name: 'Rock', icon: 'pick', description: 'Classic & Powerful',
         bg: 'from-neutral-950 via-neutral-900 to-neutral-950',
         primary: '#f97316', secondary: '#ef4444', accent: 'orange-500',
         glow: 'rgba(249, 115, 22, 0.35)',
@@ -584,7 +794,7 @@
         vizColors: ['#f97316', '#ef4444', '#fb923c']
       },
       heavy: {
-        name: 'Heavy', emoji: '💀', description: 'Brutal & Intense',
+        name: 'Heavy', icon: 'skull', description: 'Brutal & Intense',
         bg: 'from-neutral-950 via-neutral-900 to-neutral-950',
         primary: '#dc2626', secondary: '#991b1b', accent: 'red-600',
         glow: 'rgba(220, 38, 38, 0.35)',
@@ -595,7 +805,7 @@
         vizColors: ['#dc2626', '#991b1b', '#f87171']
       },
       electronic: {
-        name: 'Electronic', emoji: '⚡', description: 'Energetic & Vibrant',
+        name: 'Electronic', icon: 'bolt', description: 'Energetic & Vibrant',
         bg: 'from-neutral-950 via-neutral-900 to-neutral-950',
         primary: '#06b6d4', secondary: '#3b82f6', accent: 'cyan-400',
         glow: 'rgba(6, 182, 212, 0.35)',
@@ -606,7 +816,7 @@
         vizColors: ['#06b6d4', '#3b82f6', '#22d3ee']
       },
       hiphop: {
-        name: 'Hip-Hop', emoji: '🎤', description: 'Smooth & Hard-Hitting',
+        name: 'Hip-Hop', icon: 'mic', description: 'Smooth & Hard-Hitting',
         bg: 'from-neutral-950 via-neutral-900 to-neutral-950',
         primary: '#a855f7', secondary: '#7c3aed', accent: 'purple-500',
         glow: 'rgba(168, 85, 247, 0.35)',
@@ -617,7 +827,7 @@
         vizColors: ['#a855f7', '#7c3aed', '#c084fc']
       },
       jazz: {
-        name: 'Jazz', emoji: '🎷', description: 'Smooth & Sophisticated',
+        name: 'Jazz', icon: 'notes', description: 'Smooth & Sophisticated',
         bg: 'from-neutral-950 via-neutral-900 to-neutral-950',
         primary: '#eab308', secondary: '#ca8a04', accent: 'yellow-500',
         glow: 'rgba(234, 179, 8, 0.35)',
@@ -842,34 +1052,63 @@
     const SynthEngine = {
       noteToFreq(n) { return 440 * Math.pow(2, (n - 69) / 12); },
 
-      scheduleKick(ctx, dest, time) {
+      // Soft-clip curve for the distorted guitar bus
+      makeDistCurve(amount) {
+        const n = 1024, curve = new Float32Array(n);
+        for (let i = 0; i < n; i++) {
+          const x = (i * 2) / n - 1;
+          curve[i] = Math.tanh(amount * x);
+        }
+        return curve;
+      },
+
+      scheduleKick(ctx, dest, time, heavy = false) {
         const osc = ctx.createOscillator();
         const g = ctx.createGain();
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(150, time);
-        osc.frequency.exponentialRampToValueAtTime(30, time + 0.12);
-        g.gain.setValueAtTime(0.7, time);
-        g.gain.exponentialRampToValueAtTime(0.001, time + 0.3);
+        if (heavy) {
+          // Metal kick: higher click attack, faster drop, more punch
+          osc.frequency.setValueAtTime(220, time);
+          osc.frequency.exponentialRampToValueAtTime(35, time + 0.08);
+          g.gain.setValueAtTime(0.95, time);
+          g.gain.exponentialRampToValueAtTime(0.001, time + 0.22);
+        } else {
+          osc.frequency.setValueAtTime(150, time);
+          osc.frequency.exponentialRampToValueAtTime(30, time + 0.12);
+          g.gain.setValueAtTime(0.7, time);
+          g.gain.exponentialRampToValueAtTime(0.001, time + 0.3);
+        }
         osc.connect(g); g.connect(dest);
         osc.start(time); osc.stop(time + 0.31);
+        if (heavy) {
+          // Beater click so double-kick runs cut through
+          const click = ctx.createOscillator();
+          const cg = ctx.createGain();
+          click.type = 'square';
+          click.frequency.setValueAtTime(1800, time);
+          cg.gain.setValueAtTime(0.12, time);
+          cg.gain.exponentialRampToValueAtTime(0.001, time + 0.015);
+          click.connect(cg); cg.connect(dest);
+          click.start(time); click.stop(time + 0.02);
+        }
       },
 
-      scheduleSnare(ctx, dest, time, noiseBuf) {
+      scheduleSnare(ctx, dest, time, noiseBuf, heavy = false) {
         const ns = ctx.createBufferSource();
         ns.buffer = noiseBuf;
         const ng = ctx.createGain();
-        ng.gain.setValueAtTime(0.3, time);
-        ng.gain.exponentialRampToValueAtTime(0.001, time + 0.12);
+        ng.gain.setValueAtTime(heavy ? 0.5 : 0.3, time);
+        ng.gain.exponentialRampToValueAtTime(0.001, time + (heavy ? 0.17 : 0.12));
         const hp = ctx.createBiquadFilter();
-        hp.type = 'highpass'; hp.frequency.value = 2000;
+        hp.type = 'highpass'; hp.frequency.value = heavy ? 1300 : 2000;
         ns.connect(hp); hp.connect(ng); ng.connect(dest);
-        ns.start(time); ns.stop(time + 0.13);
+        ns.start(time); ns.stop(time + (heavy ? 0.18 : 0.13));
         const osc = ctx.createOscillator();
         const og = ctx.createGain();
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(180, time);
-        osc.frequency.exponentialRampToValueAtTime(80, time + 0.04);
-        og.gain.setValueAtTime(0.35, time);
+        osc.frequency.setValueAtTime(heavy ? 200 : 180, time);
+        osc.frequency.exponentialRampToValueAtTime(heavy ? 70 : 80, time + 0.04);
+        og.gain.setValueAtTime(heavy ? 0.5 : 0.35, time);
         og.gain.exponentialRampToValueAtTime(0.001, time + 0.08);
         osc.connect(og); og.connect(dest);
         osc.start(time); osc.stop(time + 0.09);
@@ -908,6 +1147,32 @@
         osc.start(safeTime); osc.stop(safeTime + dur + 0.01);
       },
 
+      // Detuned power chord into the distorted guitar bus — the metal rhythm sound.
+      // Low scale degrees play short (palm-mute chug), higher degrees ring out.
+      scheduleChug(ctx, bus, rootFreq, time, dur, vol) {
+        const safeTime = Math.max(0, time);
+        const voices = [
+          { mult: 1, detune: -7 },     // root
+          { mult: 1, detune: 7 },      // doubled root, detuned (thickness)
+          { mult: 1.5, detune: 0 },    // fifth
+          { mult: 0.5, detune: 0 }     // sub octave (weight)
+        ];
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0, safeTime);
+        g.gain.linearRampToValueAtTime(vol, safeTime + 0.005);
+        g.gain.exponentialRampToValueAtTime(Math.max(0.001, vol * 0.25), safeTime + dur);
+        g.gain.linearRampToValueAtTime(0, safeTime + dur + 0.02);
+        g.connect(bus);
+        voices.forEach(v => {
+          const osc = ctx.createOscillator();
+          osc.type = 'sawtooth';
+          osc.frequency.value = rootFreq * v.mult;
+          osc.detune.value = v.detune;
+          osc.connect(g);
+          osc.start(safeTime); osc.stop(safeTime + dur + 0.03);
+        });
+      },
+
       getScaleFreq(key, scale, degree, octaveOffset) {
         const s = scale;
         const idx = ((degree % s.length) + s.length) % s.length;
@@ -918,9 +1183,31 @@
       async renderSong(song) {
         const sr = 44100;
         const ctx = new OfflineAudioContext(2, sr * song.duration, sr);
+        const isHeavy = song.genre === 'heavy';
+
         const master = ctx.createGain();
-        master.gain.value = 0.6;
-        master.connect(ctx.destination);
+        master.gain.value = isHeavy ? 0.42 : 0.6;
+        // Compressor glues the mix and stops the distorted bus from clipping
+        const comp = ctx.createDynamicsCompressor();
+        comp.threshold.value = -14; comp.knee.value = 10;
+        comp.ratio.value = 4; comp.attack.value = 0.004; comp.release.value = 0.12;
+        master.connect(comp); comp.connect(ctx.destination);
+
+        // Distorted guitar bus (heavy songs only): saturation -> cab-style lowpass
+        let guitarBus = null;
+        if (isHeavy) {
+          const shaper = ctx.createWaveShaper();
+          shaper.curve = this.makeDistCurve(14);
+          shaper.oversample = '2x';
+          const cab = ctx.createBiquadFilter();
+          cab.type = 'lowpass'; cab.frequency.value = 4200; cab.Q.value = 0.7;
+          const body = ctx.createBiquadFilter();
+          body.type = 'highpass'; body.frequency.value = 55;
+          const busGain = ctx.createGain();
+          busGain.gain.value = 0.34;
+          shaper.connect(cab); cab.connect(body); body.connect(busGain); busGain.connect(master);
+          guitarBus = shaper;
+        }
 
         // Pre-create noise buffer
         const noiseBuf = ctx.createBuffer(1, sr, sr);
@@ -942,8 +1229,8 @@
           let energy = 0;
 
           // Drums
-          if (song.kick && song.kick[ms]) { this.scheduleKick(ctx, master, time); energy = Math.max(energy, 0.9); }
-          if (song.snare && song.snare[ms]) { this.scheduleSnare(ctx, master, time, noiseBuf); energy = Math.max(energy, 0.7); }
+          if (song.kick && song.kick[ms]) { this.scheduleKick(ctx, master, time, isHeavy); energy = Math.max(energy, 0.9); }
+          if (song.snare && song.snare[ms]) { this.scheduleSnare(ctx, master, time, noiseBuf, isHeavy); energy = Math.max(energy, 0.7); }
           if (song.hihat && song.hihat[ms]) { this.scheduleHihat(ctx, master, time, noiseBuf); energy = Math.max(energy, 0.3); }
 
           // Bass
@@ -951,25 +1238,38 @@
             const bp = song.bassPattern[measure % song.bassPattern.length];
             const deg = bp ? bp[ms] : undefined;
             if (deg !== null && deg !== undefined) {
-              const freq = this.getScaleFreq(song.key, song.scale, deg, 0);
-              this.scheduleNote(ctx, master, freq, time, stepDur * 1.8, song.bassType || 'sine', 0.28, 400);
+              if (isHeavy) {
+                // Bass rides an octave down, into the dirt
+                const freq = this.getScaleFreq(song.key, song.scale, deg, -1);
+                this.scheduleChug(ctx, guitarBus, freq, time, stepDur * 0.9, 0.5);
+              } else {
+                const freq = this.getScaleFreq(song.key, song.scale, deg, 0);
+                this.scheduleNote(ctx, master, freq, time, stepDur * 1.8, song.bassType || 'sine', 0.28, 400);
+              }
               energy = Math.max(energy, 0.5);
             }
           }
 
-          // Melody
+          // Melody / rhythm guitar
           if (song.melodyPattern) {
             const mp = song.melodyPattern[measure % song.melodyPattern.length];
             const deg = mp ? mp[ms] : undefined;
             if (deg !== null && deg !== undefined) {
-              const freq = this.getScaleFreq(song.key, song.scale, deg, 1);
-              this.scheduleNote(ctx, master, freq, time, stepDur * 0.85, song.leadType || 'sawtooth', 0.18, 3000);
+              if (isHeavy) {
+                // Power chords: low degrees chug short, high degrees ring
+                const freq = this.getScaleFreq(song.key, song.scale, deg, 0);
+                const isChug = deg <= 1;
+                this.scheduleChug(ctx, guitarBus, freq, time, isChug ? stepDur * 0.55 : stepDur * 1.6, isChug ? 0.62 : 0.5);
+              } else {
+                const freq = this.getScaleFreq(song.key, song.scale, deg, 1);
+                this.scheduleNote(ctx, master, freq, time, stepDur * 0.85, song.leadType || 'sawtooth', 0.18, 3000);
+              }
               energy = Math.max(energy, 0.6);
             }
           }
 
-          // Chords / Pads
-          if (song.chordPattern) {
+          // Chords / Pads (skipped for heavy — pads soften the mix)
+          if (song.chordPattern && !isHeavy) {
             const cp = song.chordPattern[measure % song.chordPattern.length];
             const deg = cp ? cp[ms] : undefined;
             if (deg !== null && deg !== undefined) {
@@ -1092,10 +1392,10 @@
       },
       {
         id: 'thunder_drop', title: 'Thunder Drop', genre: 'heavy', emoji: '⛈️',
-        description: 'Intense drum & bass', bpm: 174, duration: 45,
-        key: 48, scale: [0, 3, 5, 7, 10],
+        description: 'Relentless double-kick assault', bpm: 174, duration: 45,
+        key: 43, scale: [0, 3, 5, 7, 10],
         stepsPerMeasure: 8,
-        kick:  [1,0,0,0,0,0,1,0],
+        kick:  [1,0,1,1,0,1,1,0],
         snare: [0,0,0,0,1,0,0,1],
         hihat: [1,1,1,1,1,1,1,1],
         melodyPattern: [
@@ -1133,6 +1433,78 @@
           [3,null,null,null,null,null,null,null],
         ],
         leadType: 'triangle', bassType: 'sine'
+      },
+      {
+        id: 'blood_moon', title: 'Blood Moon', genre: 'heavy', emoji: '🌑',
+        description: 'Crushing half-time breakdown', bpm: 96, duration: 52,
+        key: 40, scale: [0, 1, 3, 5, 7, 8, 10],
+        stepsPerMeasure: 8,
+        kick:  [1,0,1,1,0,0,1,0],
+        snare: [0,0,0,0,1,0,0,0],
+        hihat: [1,1,1,1,1,1,1,1],
+        melodyPattern: [
+          [0,null,0,1,null,0,null,null],
+          [0,null,3,null,2,null,1,null],
+          [0,0,null,1,0,null,2,null],
+          [1,null,0,null,null,null,null,null],
+        ],
+        bassPattern: [
+          [0,null,0,0,null,0,0,null],
+          [0,null,1,null,0,null,2,null],
+        ],
+        chordPattern: [
+          [0,null,null,null,null,null,null,null],
+          [1,null,null,null,null,null,null,null],
+        ],
+        leadType: 'sawtooth', bassType: 'sawtooth'
+      },
+      {
+        id: 'street_cipher', title: 'Street Cipher', genre: 'hiphop', emoji: '🎤',
+        description: 'Boom bap head-nodder', bpm: 90, duration: 54,
+        key: 50, scale: [0, 3, 5, 7, 10],
+        stepsPerMeasure: 8,
+        kick:  [1,0,0,1,0,0,1,0],
+        snare: [0,0,1,0,0,0,1,0],
+        hihat: [1,1,0,1,1,0,1,1],
+        melodyPattern: [
+          [4,null,null,3,null,null,2,null],
+          [null,null,3,null,4,null,null,null],
+          [2,null,null,0,null,2,null,null],
+          [3,null,2,null,null,null,null,null],
+        ],
+        bassPattern: [
+          [0,null,null,0,null,null,null,null],
+          [3,null,null,null,2,null,0,null],
+        ],
+        chordPattern: [
+          [0,null,null,null,null,null,null,null],
+          [3,null,null,null,null,null,null,null],
+        ],
+        leadType: 'triangle', bassType: 'sine'
+      },
+      {
+        id: 'power_surge', title: 'Power Surge', genre: 'rock', emoji: '⚙️',
+        description: 'Driving arena anthem', bpm: 132, duration: 50,
+        key: 47, scale: [0, 2, 3, 5, 7, 8, 10],
+        stepsPerMeasure: 8,
+        kick:  [1,0,0,0,1,0,1,0],
+        snare: [0,0,1,0,0,0,1,0],
+        hihat: [1,0,1,0,1,0,1,0],
+        melodyPattern: [
+          [0,null,2,null,4,null,4,null],
+          [5,null,4,null,2,null,0,null],
+          [0,2,null,4,null,5,null,4],
+          [2,null,0,null,null,null,null,null],
+        ],
+        bassPattern: [
+          [0,0,null,0,0,null,0,0],
+          [3,3,null,3,4,null,4,4],
+        ],
+        chordPattern: [
+          [0,null,null,null,null,null,null,null],
+          [4,null,null,null,null,null,null,null],
+        ],
+        leadType: 'sawtooth', bassType: 'square'
       }
     ];
 
@@ -1227,25 +1599,33 @@
     // ============================================
     // GAME LOOP HOOK
     // ============================================
-    const useGameLoop = (isPlaying, onTick) => {
+    const useGameLoop = (isPlaying, isPaused, onTick) => {
       const frameRef = useRef(null);
+      const elapsedRef = useRef(0);
       const lastTimeRef = useRef(0);
-      const startTimeRef = useRef(0);
-      
+
       useEffect(() => {
-        if (!isPlaying) { if (frameRef.current) cancelAnimationFrame(frameRef.current); return; }
-        startTimeRef.current = performance.now();
-        lastTimeRef.current = startTimeRef.current;
+        if (!isPlaying) {
+          elapsedRef.current = 0;
+          if (frameRef.current) cancelAnimationFrame(frameRef.current);
+          return;
+        }
+        if (isPaused) {
+          if (frameRef.current) cancelAnimationFrame(frameRef.current);
+          return;
+        }
+        lastTimeRef.current = performance.now();
         const tick = (currentTime) => {
           const deltaTime = (currentTime - lastTimeRef.current) / 1000;
           lastTimeRef.current = currentTime;
-          onTick((currentTime - startTimeRef.current) / 1000, deltaTime);
+          elapsedRef.current += deltaTime;
+          onTick(elapsedRef.current, deltaTime);
           frameRef.current = requestAnimationFrame(tick);
         };
         frameRef.current = requestAnimationFrame(tick);
         return () => { if (frameRef.current) cancelAnimationFrame(frameRef.current); };
-      }, [isPlaying, onTick]);
-      return startTimeRef;
+      }, [isPlaying, isPaused, onTick]);
+      return elapsedRef;
     };
 
     // ============================================
@@ -1584,18 +1964,18 @@
     const ComboMilestone = ({ milestone, theme }) => {
       if (!milestone) return null;
       const messages = {
-        25: { text: '25 COMBO!', icon: '⚡', sub: 'Getting warmed up!' },
-        50: { text: '50 COMBO!', icon: '🔥', sub: 'On fire!' },
-        100: { text: '100 COMBO!', icon: '💫', sub: 'Unstoppable!' },
-        200: { text: '200 COMBO!', icon: '🌟', sub: 'Legendary!' },
-        500: { text: '500 COMBO!', icon: '👑', sub: 'GODLIKE!' }
+        25: { text: '25 COMBO', icon: 'bolt', sub: 'Getting warmed up!' },
+        50: { text: '50 COMBO', icon: 'flame', sub: 'On fire!' },
+        100: { text: '100 COMBO', icon: 'star', sub: 'Unstoppable!' },
+        200: { text: '200 COMBO', icon: 'trophy', sub: 'Legendary!' },
+        500: { text: '500 COMBO', icon: 'crown', sub: 'GODLIKE!' }
       };
-      const msg = messages[milestone] || { text: `${milestone} COMBO!`, icon: '🔥', sub: 'Amazing!' };
+      const msg = messages[milestone] || { text: `${milestone} COMBO`, icon: 'flame', sub: 'Amazing!' };
       
       return (
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-40 text-center"
           style={{animation: 'milestoneIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards, milestoneOut 0.5s ease-in 1.5s forwards'}}>
-          <div className="text-6xl mb-2">{msg.icon}</div>
+          <div className="mb-3 flex justify-center"><Icon name={msg.icon} size={52} color={theme.primary} style={{filter: `drop-shadow(0 0 16px ${theme.glow})`}} /></div>
           <div className="text-4xl font-black" style={{color: theme.primary, textShadow: `0 0 40px ${theme.glow}`}}>{msg.text}</div>
           <div className="text-lg font-bold text-neutral-300 mt-1">{msg.sub}</div>
         </div>
@@ -1603,38 +1983,272 @@
     };
 
     // ============================================
+    // ACHIEVEMENT TOASTS
+    // ============================================
+    const AchievementToasts = ({ toasts, theme }) => (
+      <div className="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none" style={{maxWidth: '320px'}}>
+        {toasts.map(t => (
+          <div key={t.key} className="flex items-center gap-3 px-4 py-3 rounded-xl animate-slide-in"
+            style={{background: 'rgba(12,12,18,0.95)', border: `1px solid ${theme.primary}50`, boxShadow: `0 4px 24px ${theme.glow}`, backdropFilter: 'blur(8px)'}}>
+            <span className="w-10 h-10 rounded-xl flex items-center justify-center" style={{background: `${theme.primary}18`}}><Icon name={t.icon} size={22} color={theme.primary} /></span>
+            <div>
+              <div className="text-[10px] uppercase tracking-wider font-bold" style={{color: theme.primary}}>Achievement Unlocked</div>
+              <div className="text-sm font-bold text-white">{t.name}</div>
+              <div className="text-[11px] text-neutral-400">{t.desc}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+
+    // ============================================
+    // STATS & ACHIEVEMENTS MODAL
+    // ============================================
+    const StatsModal = ({ isOpen, onClose, theme }) => {
+      if (!isOpen) return null;
+      const profile = Profile.get();
+      const lvl = levelFromXP(profile.xp);
+      const topScores = HighScores.getTopN(10);
+      const unlockedCount = profile.achievements.length;
+
+      return (
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-md z-[90] flex items-start sm:items-center justify-center overflow-y-auto p-4" onClick={onClose}>
+          <div className="card-elevated w-full max-w-2xl p-6 my-8 animate-scale-in" onClick={e => e.stopPropagation()}
+            style={{background: '#0c0c12', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '20px'}}>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-black">Player Profile</h2>
+              <button onClick={onClose} className="btn btn-secondary w-9 h-9 rounded-xl text-sm">✕</button>
+            </div>
+
+            {/* Level */}
+            <div className="p-4 rounded-2xl mb-6" style={{background: `${theme.primary}10`, border: `1px solid ${theme.primary}30`}}>
+              <div className="flex items-end justify-between mb-2">
+                <div>
+                  <div className="text-3xl font-black" style={{color: theme.primary}}>Level {lvl.level}</div>
+                  <div className="text-xs text-neutral-400 font-bold uppercase tracking-wider">{titleForLevel(lvl.level)}</div>
+                </div>
+                <div className="text-right">
+                  <div className="text-sm font-bold text-neutral-300">{lvl.intoLevel.toLocaleString()} / {lvl.needed.toLocaleString()} XP</div>
+                  {profile.streak > 1 && <div className="text-xs font-bold mt-1 flex items-center justify-end gap-1" style={{color: '#f97316'}}><Icon name="flame" size={13} color="#f97316" />{profile.streak}-day streak</div>}
+                </div>
+              </div>
+              <div className="h-2.5 bg-neutral-800 rounded-full overflow-hidden">
+                <div className="h-full rounded-full transition-all" style={{width: `${(lvl.intoLevel / lvl.needed) * 100}%`, background: `linear-gradient(90deg, ${theme.primary}, ${theme.secondary})`}}></div>
+              </div>
+            </div>
+
+            {/* Lifetime stats */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+              {[
+                { label: 'Songs Played', value: profile.songsPlayed },
+                { label: 'Notes Hit', value: profile.totalNotes.toLocaleString() },
+                { label: 'Best Combo', value: `${profile.bestCombo}x` },
+                { label: 'Best Score', value: profile.bestScore.toLocaleString() }
+              ].map(s => (
+                <div key={s.label} className="card p-3 text-center" style={{background: 'rgba(255,255,255,0.03)', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.06)'}}>
+                  <div className="text-xl font-black" style={{color: theme.primary}}>{s.value}</div>
+                  <div className="text-[9px] text-neutral-500 uppercase tracking-wider font-bold mt-1">{s.label}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Achievements */}
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-neutral-400">Achievements</h3>
+                <span className="text-xs font-bold" style={{color: theme.primary}}>{unlockedCount} / {ACHIEVEMENTS.length}</span>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {ACHIEVEMENTS.map(a => {
+                  const unlocked = profile.achievements.includes(a.id);
+                  return (
+                    <div key={a.id} title={a.desc} className="p-2.5 text-center rounded-xl"
+                      style={{
+                        background: unlocked ? `${theme.primary}12` : 'rgba(255,255,255,0.02)',
+                        border: unlocked ? `1px solid ${theme.primary}40` : '1px solid rgba(255,255,255,0.05)',
+                        opacity: unlocked ? 1 : 0.45
+                      }}>
+                      <div className="mb-1.5 flex justify-center"><Icon name={a.icon} size={22} color={unlocked ? theme.primary : 'rgba(255,255,255,0.35)'} /></div>
+                      <div className="text-[10px] font-bold text-white leading-tight">{a.name}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Leaderboard */}
+            <div>
+              <h3 className="text-sm font-bold uppercase tracking-wider text-neutral-400 mb-3">Local Leaderboard</h3>
+              {topScores.length === 0 ? (
+                <p className="text-sm text-neutral-600 text-center py-4">Play a song to set your first score!</p>
+              ) : (
+                <div className="space-y-1.5">
+                  {topScores.map((s, i) => (
+                    <div key={i} className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm" style={{background: 'rgba(255,255,255,0.03)'}}>
+                      <span className="font-black w-6 text-center" style={{color: i === 0 ? '#fbbf24' : i === 1 ? '#d1d5db' : i === 2 ? '#cd7f32' : 'rgba(255,255,255,0.3)'}}>{i + 1}</span>
+                      <span className="font-bold flex-1 truncate text-neutral-200">{s.song}</span>
+                      <span className="text-[10px] font-bold uppercase text-neutral-500 hidden sm:inline">{s.difficulty}</span>
+                      <span className="font-black w-8 text-center" style={{color: getGrade(parseFloat(s.accuracy)).color}}>{s.grade}</span>
+                      <span className="font-bold text-neutral-300 w-20 text-right">{s.score.toLocaleString()}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // ============================================
+    // INFO MODAL (How to Play / Privacy Policy)
+    // ============================================
+    const InfoModal = ({ page, onClose, theme }) => {
+      if (!page) return null;
+      return (
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-md z-[90] flex items-start sm:items-center justify-center overflow-y-auto p-4" onClick={onClose}>
+          <div className="w-full max-w-xl p-6 my-8 animate-scale-in" onClick={e => e.stopPropagation()}
+            style={{background: '#0c0c12', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '20px'}}>
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-xl font-black">{page === 'privacy' ? 'Privacy Policy' : 'How to Play'}</h2>
+              <button onClick={onClose} className="btn btn-secondary w-9 h-9 rounded-xl text-sm">✕</button>
+            </div>
+            {page === 'howto' ? (
+              <div className="text-sm text-neutral-300 space-y-3 leading-relaxed">
+                <p><strong style={{color: theme.primary}}>Goal:</strong> Hit the arrows when they reach the glowing target zone at the bottom of each lane.</p>
+                <p><strong style={{color: theme.primary}}>Controls:</strong> Arrow keys or WASD on desktop (switch in Settings). Tap the lanes on mobile.</p>
+                <p><strong style={{color: theme.primary}}>Timing:</strong> PERFECT (gold) beats GOOD (green) beats OK (blue). Misses break your combo.</p>
+                <p><strong style={{color: theme.primary}}>Sustain notes:</strong> Long notes with tails — press on time, then <em>hold</em> the key until the tail ends for bonus points.</p>
+                <p><strong style={{color: theme.primary}}>Combos:</strong> Every consecutive hit multiplies your score. Protect the streak.</p>
+                <p><strong style={{color: theme.primary}}>XP & Levels:</strong> Every song earns XP based on your score and grade. Level up, build a daily streak, and unlock all {ACHIEVEMENTS.length} achievements.</p>
+                <p><strong style={{color: theme.primary}}>Daily Challenge:</strong> One featured song + difficulty per day, worth 2x XP.</p>
+                <p><strong style={{color: theme.primary}}>Your music:</strong> Upload any MP3 or WAV and the beat detector builds a chart automatically.</p>
+                <p className="text-neutral-500 text-xs pt-2">Tip: Press ESC to pause mid-song.</p>
+              </div>
+            ) : (
+              <div className="text-sm text-neutral-400 space-y-3 leading-relaxed">
+                <p className="text-neutral-500 text-xs">Last updated: June 2026</p>
+                <p><strong className="text-neutral-200">What we store:</strong> Arrowfall saves your scores, settings, player level, and achievements in your browser's local storage. This data never leaves your device and is deleted if you clear your browser data.</p>
+                <p><strong className="text-neutral-200">Uploaded music:</strong> Audio files you upload are processed entirely in your browser. They are never uploaded to any server.</p>
+                <p><strong className="text-neutral-200">Advertising:</strong> This site may display ads served by Google AdSense. Google may use cookies (including the DoubleClick cookie) to serve ads based on your visits to this and other sites. You can opt out of personalized advertising at <span style={{color: theme.primary}}>google.com/settings/ads</span>. Third-party vendors' use of advertising cookies enables them and their partners to serve ads based on your browsing history.</p>
+                <p><strong className="text-neutral-200">Analytics:</strong> We may use anonymous, aggregated analytics to understand how the game is played. No personally identifiable information is collected.</p>
+                <p><strong className="text-neutral-200">Children:</strong> This game does not knowingly collect personal information from anyone, including children under 13.</p>
+                <p><strong className="text-neutral-200">Contact:</strong> Questions? Reach out via the Arrowfall GitHub repository.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    };
+
+    // ============================================
+    // AD BREAK (between songs, every Nth play)
+    // ============================================
+    const AdBreak = ({ onContinue, theme }) => {
+      const [countdown, setCountdown] = useState(5);
+      useEffect(() => {
+        if (countdown <= 0) return;
+        const t = setTimeout(() => setCountdown(c => c - 1), 1000);
+        return () => clearTimeout(t);
+      }, [countdown]);
+
+      return (
+        <div className="fixed inset-0 bg-black/95 backdrop-blur-md z-[95] flex items-center justify-center p-4">
+          <div className="text-center max-w-md w-full animate-scale-in">
+            <div className="text-xs uppercase tracking-[4px] text-neutral-500 font-bold mb-4">Quick break</div>
+            <div className="card-elevated p-4 mb-6 mx-auto" style={{background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', minHeight: '250px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+              {AD_CONFIG.enabled ? <AdSlot slot="adBreak" style={{width: '100%'}} /> : <span className="text-neutral-600 text-sm">Ads help keep Arrowfall free</span>}
+            </div>
+            <button onClick={onContinue} disabled={countdown > 0}
+              className="btn px-8 py-3 rounded-xl font-bold text-white text-lg transition-all"
+              style={{
+                background: countdown > 0 ? 'rgba(255,255,255,0.08)' : theme.primary,
+                boxShadow: countdown > 0 ? 'none' : `0 4px 24px ${theme.glow}`,
+                cursor: countdown > 0 ? 'not-allowed' : 'pointer',
+                opacity: countdown > 0 ? 0.6 : 1
+              }}>
+              {countdown > 0 ? `Continue in ${countdown}...` : 'Continue →'}
+            </button>
+          </div>
+        </div>
+      );
+    };
+
+    // ============================================
+    // PAUSE OVERLAY
+    // ============================================
+    const PauseOverlay = ({ onResume, onRestart, onQuit, theme }) => (
+      <div className="absolute inset-0 bg-black/88 backdrop-blur-md z-50 flex items-center justify-center">
+        <div className="text-center animate-scale-in">
+          <div className="text-5xl font-black mb-2" style={{color: theme.primary, textShadow: `0 0 40px ${theme.glow}`}}>PAUSED</div>
+          <p className="text-neutral-500 text-sm mb-8">Press ESC to resume</p>
+          <div className="flex flex-col gap-3 w-56 mx-auto">
+            <button onClick={onResume} className="btn px-6 py-3 rounded-xl font-bold text-white"
+              style={{background: theme.primary, boxShadow: `0 4px 24px ${theme.glow}`}}><Icon name="play" size={16} style={{marginRight: 8}} />Resume</button>
+            <button onClick={onRestart} className="btn btn-secondary px-6 py-3 rounded-xl font-bold"><Icon name="restart" size={16} style={{marginRight: 8}} />Restart</button>
+            <button onClick={onQuit} className="btn btn-secondary px-6 py-3 rounded-xl font-bold"><Icon name="close" size={15} style={{marginRight: 8}} />Quit song</button>
+          </div>
+        </div>
+      </div>
+    );
+
+    // ============================================
     // RESULTS SCREEN
     // ============================================
-    const ResultsScreen = ({ score, stats, maxCombo, accuracy, songData, theme, onPlayAgain, onNewSong, isNewBest }) => {
+    const ResultsScreen = ({ score, stats, maxCombo, accuracy, songData, theme, onPlayAgain, onNewSong, isNewBest, xpResult }) => {
       const grade = getGrade(parseFloat(accuracy));
       const totalNotes = stats.perfect + stats.good + stats.ok + stats.miss;
-      
+      const isFullCombo = totalNotes >= 10 && stats.miss === 0;
+      const [shared, setShared] = useState(false);
+
+      const handleShare = async () => {
+        const text = `I just scored ${Math.round(score).toLocaleString()} (${grade.letter} rank, ${maxCombo}x combo) on "${songData?.title}" in Arrowfall! Can you beat it?`;
+        const url = window.location.href.split('?')[0];
+        try {
+          if (navigator.share) { await navigator.share({ title: 'Arrowfall', text, url }); }
+          else { await navigator.clipboard.writeText(`${text} ${url}`); setShared(true); setTimeout(() => setShared(false), 2000); }
+        } catch (e) { /* user cancelled */ }
+      };
+
       return (
-        <div className="absolute inset-0 bg-black/92 flex items-center justify-center backdrop-blur-md z-50">
+        <div className="absolute inset-0 bg-black/92 flex items-center justify-center backdrop-blur-md z-50 overflow-y-auto">
           <div className="text-center px-6 py-8 max-w-lg w-full">
             <div className="mb-4" style={{animation: 'gradeReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) both'}}>
-              <div className="text-[120px] font-black leading-none" style={{
+              <div className="text-[110px] font-black leading-none display-font" style={{
                 color: grade.color,
-                textShadow: `0 0 60px ${grade.glow}, 0 0 120px ${grade.glow}`,
-                fontFamily: "'Outfit', sans-serif"
+                textShadow: `0 0 60px ${grade.glow}, 0 0 120px ${grade.glow}`
               }}>{grade.letter}</div>
               <div className="text-lg font-bold tracking-wider" style={{color: grade.color}}>{grade.label}</div>
             </div>
             
-            <p className="text-neutral-400 mb-6 text-sm animate-fade-in" style={{animationDelay: '0.3s'}}>{songData?.title}</p>
+            <p className="text-neutral-400 mb-4 text-sm animate-fade-in" style={{animationDelay: '0.3s'}}>{songData?.title}</p>
             
-            {isNewBest && (
-              <div className="inline-block px-4 py-1 rounded-full text-sm font-bold mb-4 animate-scale-in"
-                style={{background: `${theme.primary}25`, color: theme.primary, border: `1px solid ${theme.primary}40`, animationDelay: '0.4s'}}>
-                ✨ NEW PERSONAL BEST!
-              </div>
-            )}
+            <div className="flex flex-wrap justify-center gap-2 mb-4">
+              {isNewBest && (
+                <div className="inline-block px-4 py-1 rounded-full text-sm font-bold animate-scale-in"
+                  style={{background: `${theme.primary}25`, color: theme.primary, border: `1px solid ${theme.primary}40`, animationDelay: '0.4s'}}>
+                  NEW PERSONAL BEST
+                </div>
+              )}
+              {isFullCombo && (
+                <div className="inline-block px-4 py-1 rounded-full text-sm font-bold animate-scale-in"
+                  style={{background: 'rgba(251,191,36,0.15)', color: '#fbbf24', border: '1px solid rgba(251,191,36,0.4)', animationDelay: '0.45s'}}>
+                  FULL COMBO
+                </div>
+              )}
+              {xpResult?.isDaily && (
+                <div className="inline-block px-4 py-1 rounded-full text-sm font-bold animate-scale-in"
+                  style={{background: 'rgba(34,197,94,0.15)', color: '#22c55e', border: '1px solid rgba(34,197,94,0.4)', animationDelay: '0.5s'}}>
+                  DAILY COMPLETE · 2X XP
+                </div>
+              )}
+            </div>
             
-            <div className="text-5xl font-black mb-6 animate-slide-up" style={{
+            <div className="text-4xl font-bold mb-6 animate-slide-up display-font" style={{
               color: theme.primary, textShadow: `0 0 30px ${theme.glow}`, animationDelay: '0.5s'
             }}>{Math.round(score).toLocaleString()}</div>
             
-            <div className="grid grid-cols-4 gap-3 mb-6">
+            <div className="grid grid-cols-4 gap-3 mb-5">
               {[
                 { label: 'Perfect', value: stats.perfect, color: '#fbbf24', delay: '0.6s' },
                 { label: 'Good', value: stats.good, color: '#34d399', delay: '0.7s' },
@@ -1648,7 +2262,7 @@
               ))}
             </div>
             
-            <div className="flex justify-center gap-8 mb-8 text-sm animate-fade-in" style={{animationDelay: '1s'}}>
+            <div className="flex justify-center gap-8 mb-5 text-sm animate-fade-in" style={{animationDelay: '1s'}}>
               <div>
                 <span className="text-neutral-500">Max Combo </span>
                 <span className="font-bold text-yellow-400">{maxCombo}x</span>
@@ -1662,17 +2276,39 @@
                 <span className="font-bold text-neutral-300">{totalNotes}</span>
               </div>
             </div>
+
+            {/* XP earned + level progress */}
+            {xpResult && (
+              <div className="mb-6 p-4 rounded-2xl text-left animate-fade-in" style={{background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', animationDelay: '1.05s'}}>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-bold" style={{color: theme.primary}}>+{xpResult.xpEarned.toLocaleString()} XP</span>
+                  <span className="text-xs font-bold text-neutral-400">
+                    {xpResult.leveledUp && <span className="mr-2" style={{color: '#fbbf24'}}>⬆ LEVEL UP!</span>}
+                    Level {xpResult.level} · {titleForLevel(xpResult.level)}
+                  </span>
+                </div>
+                <div className="h-2 bg-neutral-800 rounded-full overflow-hidden">
+                  <div className="h-full rounded-full transition-all duration-700" style={{width: `${(xpResult.intoLevel / xpResult.needed) * 100}%`, background: `linear-gradient(90deg, ${theme.primary}, ${theme.secondary})`}}></div>
+                </div>
+                <div className="text-[10px] text-neutral-500 mt-1 text-right">{xpResult.intoLevel.toLocaleString()} / {xpResult.needed.toLocaleString()} XP to next level</div>
+              </div>
+            )}
             
-            <div className="flex gap-3 justify-center animate-slide-up" style={{animationDelay: '1.1s'}}>
+            <div className="flex gap-3 justify-center animate-slide-up flex-wrap" style={{animationDelay: '1.1s'}}>
               <button onClick={onPlayAgain}
                 className="btn px-8 py-3 rounded-xl font-bold text-white text-lg"
                 style={{background: theme.primary, boxShadow: `0 4px 24px ${theme.glow}`}}>
-                ↻ Replay
+                <Icon name="restart" size={17} style={{marginRight: 8}} />Replay
               </button>
               <button onClick={onNewSong} className="btn btn-secondary px-8 py-3 rounded-xl font-bold text-lg">
                 New Song
               </button>
+              <button onClick={handleShare} className="btn btn-secondary px-6 py-3 rounded-xl font-bold text-lg" title="Share your score">
+                {shared ? 'Copied!' : <><Icon name="share" size={15} style={{marginRight: 8}} />Share</>}
+              </button>
             </div>
+
+            <AdSlot slot="resultsRect" style={{marginTop: '1.5rem'}} />
           </div>
         </div>
       );
@@ -1681,231 +2317,288 @@
     // ============================================
     // LANDING PAGE
     // ============================================
-    const LandingPage = ({ onSelectGenre, onSelectBuiltIn, difficulty, onDifficultyChange, theme, onOpenSettings }) => {
-      const [hoveredSong, setHoveredSong] = React.useState(null);
-      
+    // Static mock of the play field — shows the game before you play it
+    const GamePreview = () => {
+      const lanes = ['left', 'down', 'up', 'right'];
+      const floaters = [
+        { lane: 0, top: '14%' }, { lane: 2, top: '8%' },
+        { lane: 1, top: '36%' }, { lane: 3, top: '26%' },
+        { lane: 2, top: '52%' }, { lane: 0, top: '58%' }
+      ];
       return (
-        <div className="min-h-screen bg-black text-white relative overflow-hidden" style={{fontFamily: "'Outfit', system-ui, sans-serif"}}>
-          {/* Scanline overlay */}
-          <div className="landing-scanlines"></div>
-          <div className="landing-noise"></div>
-          
-          <LandingParticles theme={theme} />
-          
-          {/* Geometric accent lines */}
-          <div style={{position:'fixed',top:0,left:'10%',width:'1px',height:'100%',background:'linear-gradient(180deg,transparent,rgba(255,0,110,0.15) 30%,rgba(255,0,110,0.15) 70%,transparent)',pointerEvents:'none',zIndex:1}}></div>
-          <div style={{position:'fixed',top:0,right:'10%',width:'1px',height:'100%',background:'linear-gradient(180deg,transparent,rgba(0,240,255,0.1) 30%,rgba(0,240,255,0.1) 70%,transparent)',pointerEvents:'none',zIndex:1}}></div>
-          
-          {/* Settings button */}
-          <button onClick={onOpenSettings}
-            className="fixed top-5 right-5 z-50 w-10 h-10 flex items-center justify-center text-sm transition-all hover:text-white"
-            style={{border:'1px solid rgba(255,255,255,0.1)',background:'rgba(0,0,0,0.5)',color:'rgba(255,255,255,0.4)',clipPath:'polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%)'}}
-            title="Settings">⚙</button>
-          
-          {/* ===== HERO SECTION ===== */}
-          <section className="min-h-screen flex flex-col justify-center items-start px-6 sm:px-12 md:px-20 relative" style={{maxWidth:'1400px',margin:'0 auto'}}>
-            <div className="corner-decor tl"></div>
-            <div className="corner-decor br" style={{position:'absolute'}}></div>
-            
-            {/* Version tag */}
-            <div className="mb-8" style={{animation:'flickerIn 1s both 0.2s'}}>
-              <span style={{fontFamily:'Courier New, monospace',fontSize:'0.7rem',letterSpacing:'3px',color:'rgba(255,255,255,0.25)',textTransform:'uppercase'}}>v2.0 // browser rhythm engine</span>
-            </div>
-            
-            {/* Main title */}
-            <div className="mb-4">
-              <h1 className="landing-hero-title" data-text="ARROW FALL" style={{userSelect:'none'}}>
-                ARROW<br/>FALL
-              </h1>
-            </div>
-            
-            {/* Tagline */}
-            <div className="landing-tagline mb-10">
-              <span style={{fontSize:'1.25rem',color:'rgba(255,255,255,0.75)',letterSpacing:'-0.02em',lineHeight:1.3}}>
-                The ultimate rhythm game <br/>
-                Play any song you upload!
-              </span>
-            </div>
-            
-            {/* Difficulty + CTA row */}
-            <div className="flex flex-wrap items-center gap-4 mb-12" style={{animation:'fadeInUp 0.6s both 0.6s'}}>
-              <div className="flex">
-                {['easy', 'medium', 'hard'].map(diff => (
-                  <button key={diff}
-                    onClick={() => onDifficultyChange(diff)}
-                    className={`diff-btn ${difficulty === diff ? 'active' : ''}`}>
-                    {diff}
-                  </button>
-                ))}
-              </div>
-              <div style={{width:'1px',height:'32px',background:'rgba(255,255,255,0.1)'}}></div>
-              <button onClick={() => document.getElementById('section-upload')?.scrollIntoView({behavior:'smooth'})}
-                className="play-btn-landing">
-                START PLAYING
-              </button>
-            </div>
-            
-            {/* Quick stats */}
-            <div className="flex gap-8" style={{animation:'fadeInUp 0.6s both 0.8s'}}>
-              {[
-                { val: '6', label: 'BUILT-IN TRACKS' },
-                { val: '∞', label: 'YOUR MP3s' },
-               
-              ].map(s => (
-                <div key={s.label}>
-                  <div style={{fontSize:'1.5rem',fontWeight:900,color:'white',lineHeight:1}}>{s.val}</div>
-                  <div style={{fontSize:'0.6rem',letterSpacing:'2px',color:'rgba(255,255,255,0.25)',marginTop:'4px',fontFamily:'Courier New, monospace'}}>{s.label}</div>
+        <div className="relative w-full overflow-hidden" aria-hidden="true"
+          style={{height: '420px', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.08)',
+            background: 'linear-gradient(180deg, #0a0a12 0%, #0d0d18 100%)',
+            boxShadow: '0 24px 80px rgba(255,0,110,0.12), 0 8px 32px rgba(0,0,0,0.6)'}}>
+          {/* score chip */}
+          <div className="absolute top-4 right-4 z-10 flex items-center gap-3 px-3 py-2 rounded-xl"
+            style={{background: 'rgba(0,0,0,0.55)', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(6px)'}}>
+            <span className="display-font" style={{fontSize: '0.8rem', color: '#ff006e'}}>128,540</span>
+            <span style={{fontSize: '0.65rem', fontWeight: 800, color: '#fbbf24'}}>47x</span>
+          </div>
+          {/* lanes */}
+          <div className="absolute inset-0 flex">
+            {lanes.map((lane, li) => (
+              <div key={lane} className="relative flex-1" style={{borderRight: li < 3 ? '1px solid rgba(255,255,255,0.05)' : 'none'}}>
+                <div className="absolute bottom-4 left-0 right-0 flex justify-center">
+                  <div className="w-12 h-12 rounded-xl border-2 flex items-center justify-center"
+                    style={{borderColor: 'rgba(255,0,110,0.35)', background: 'rgba(255,255,255,0.03)', color: 'rgba(255,255,255,0.8)', fontSize: '1.6rem'}}>
+                    <LaneIcon dir={lane} />
+                  </div>
                 </div>
-              ))}
+              </div>
+            ))}
+          </div>
+          {/* judgment line */}
+          <div className="absolute left-0 right-0" style={{top: '76%', height: '2px',
+            background: 'linear-gradient(90deg, transparent, #ff006e 15%, #ff006e 85%, transparent)',
+            boxShadow: '0 0 12px rgba(255,0,110,0.5)'}}></div>
+          {/* falling notes */}
+          <div className="absolute inset-0 preview-drift">
+            {floaters.map((f, i) => (
+              <div key={i} className="absolute flex items-center justify-center w-11 h-11 rounded-xl"
+                style={{
+                  left: `calc(${f.lane * 25}% + 12.5% - 22px)`, top: f.top,
+                  background: 'linear-gradient(135deg, #ff006e, #d6336c)',
+                  boxShadow: '0 0 14px rgba(255,0,110,0.4)',
+                  color: 'white', fontSize: '1.5rem'
+                }}>
+                <LaneIcon dir={lanes[f.lane]} />
+              </div>
+            ))}
+          </div>
+          {/* PERFECT hit on the line */}
+          <div className="absolute flex flex-col items-center" style={{left: 'calc(25% + 12.5% - 22px)', top: 'calc(76% - 22px)'}}>
+            <div className="flex items-center justify-center w-11 h-11 rounded-xl"
+              style={{background: '#fbbf24', boxShadow: '0 0 24px rgba(251,191,36,0.7)', color: '#1c1917', fontSize: '1.5rem'}}>
+              <LaneIcon dir="down" />
             </div>
-            
-            {/* Scroll indicator */}
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2" style={{animation:'float 2s ease-in-out infinite'}}>
-              <div style={{fontFamily:'Courier New, monospace',fontSize:'0.65rem',letterSpacing:'3px',color:'rgba(255,255,255,0.2)',textTransform:'uppercase',textAlign:'center'}}>
-                scroll<br/>
-                <span style={{fontSize:'1.2rem',lineHeight:2}}>↓</span>
+            <span className="display-font" style={{fontSize: '0.6rem', color: '#fbbf24', marginTop: '6px', letterSpacing: '1px'}}>PERFECT</span>
+          </div>
+          <div className="absolute inset-x-0 bottom-0 h-24 pointer-events-none"
+            style={{background: 'linear-gradient(to top, rgba(255,0,110,0.07), transparent)'}}></div>
+        </div>
+      );
+    };
+
+    const LandingPage = ({ onSelectGenre, onSelectBuiltIn, onPlayDaily, onOpenStats, onOpenInfo, difficulty, onDifficultyChange, theme, onOpenSettings }) => {
+      const profile = Profile.get();
+      const lvl = levelFromXP(profile.xp);
+      const daily = getDailyChallenge();
+      const dailyDone = profile.dailyDoneDate === Profile.todayKey();
+      const dailyTheme = GENRE_THEMES[daily.song.genre];
+      const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+
+      return (
+        <div className="min-h-screen text-white relative" style={{fontFamily: "'Outfit', system-ui, sans-serif", background: '#050508'}}>
+          {/* Ambient glow (static — zero animation cost) */}
+          <div className="fixed pointer-events-none" style={{top: '-20%', right: '-10%', width: '700px', height: '700px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,0,110,0.07) 0%, transparent 65%)'}}></div>
+          <div className="fixed pointer-events-none" style={{bottom: '-25%', left: '-10%', width: '600px', height: '600px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(0,140,255,0.05) 0%, transparent 65%)'}}></div>
+
+          {/* ===== NAV ===== */}
+          <nav className="nav-bar">
+            <div className="flex items-center justify-between px-5 sm:px-8 py-3" style={{maxWidth: '1200px', margin: '0 auto'}}>
+              <div className="flex items-center gap-3">
+                <Logo size={32} />
+                <span className="display-font" style={{fontSize: '1rem', fontWeight: 900, letterSpacing: '0.5px'}}>ARROWFALL</span>
+              </div>
+              <div className="hidden md:flex items-center gap-1">
+                <button className="nav-link" onClick={() => scrollTo('upload')}>Your music</button>
+                <button className="nav-link" onClick={() => scrollTo('songs')}>Songs</button>
+                <button className="nav-link" onClick={() => scrollTo('daily')}>Daily</button>
+                <button className="nav-link" onClick={() => onOpenInfo('howto')}>How to play</button>
+              </div>
+              <div className="flex items-center gap-2">
+                <button onClick={onOpenStats}
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-colors hover:bg-white/10"
+                  style={{background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)'}}
+                  title="Player stats & achievements">
+                  <Icon name="chart" size={15} color="#ff006e" />
+                  <span>LV {lvl.level}</span>
+                  {profile.streak > 1 && (
+                    <span className="flex items-center gap-0.5" style={{color: '#f97316'}}>
+                      <Icon name="flame" size={13} color="#f97316" />{profile.streak}
+                    </span>
+                  )}
+                </button>
+                <button onClick={onOpenSettings}
+                  className="w-9 h-9 rounded-xl flex items-center justify-center transition-colors hover:bg-white/10"
+                  style={{background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.6)'}}
+                  title="Settings">
+                  <Icon name="settings" size={17} />
+                </button>
               </div>
             </div>
-          </section>
-          
-          {/* ===== GENRE SELECT / UPLOAD ===== */}
-          <section id="section-upload" className="px-6 sm:px-12 md:px-20 py-20 relative" style={{maxWidth:'1400px',margin:'0 auto'}}>
-            <div className="flex items-center gap-4 mb-12">
-              <div style={{flex:1,height:'1px',background:'linear-gradient(90deg, rgba(255,0,110,0.4), transparent)'}}></div>
-              <h2 style={{fontFamily:'Courier New, monospace',fontSize:'0.7rem',letterSpacing:'4px',color:'rgba(255,255,255,0.3)',textTransform:'uppercase'}}>01 // upload & play</h2>
-              <div style={{flex:1,height:'1px',background:'linear-gradient(90deg, transparent, rgba(255,0,110,0.4)'}}></div>
-            </div>
-            
-            {/* Genre select for upload */}
-            <div id="genre-picker">
-              <div style={{fontSize:'0.75rem',letterSpacing:'2px',color:'rgba(255,255,255,0.25)',textTransform:'uppercase',marginBottom:'1.5rem',fontFamily:'Courier New, monospace'}}>Pick a vibe → then upload your track</div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {Object.entries(GENRE_THEMES).map(([key, genre]) => (
-                  <button
-                    key={key}
-                    onClick={() => onSelectGenre(key)}
-                    className="song-tile text-left group"
-                    style={{padding:'1.25rem 1.5rem'}}
-                  >
-                    <div style={{position:'absolute',bottom:0,left:0,height:'2px',background:genre.primary,width:0,transition:'width 0.3s'}} className="group-hover:!w-full"></div>
-                    <div className="flex items-center gap-3">
-                      <span style={{fontSize:'2rem',transition:'transform 0.2s',filter:`drop-shadow(0 0 6px ${genre.glow})`}} className="group-hover:scale-110">{genre.emoji}</span>
-                      <div>
-                        <div style={{fontSize:'1rem',fontWeight:700,color:'white',letterSpacing:'-0.3px'}}>{genre.name}</div>
-                        <div style={{fontSize:'0.7rem',color:'rgba(255,255,255,0.3)',fontFamily:'Courier New, monospace'}}>{genre.description}</div>
-                      </div>
-                    </div>
+          </nav>
+
+          <main className="relative" style={{maxWidth: '1200px', margin: '0 auto', padding: '0 1.25rem'}}>
+
+            {/* ===== HERO ===== */}
+            <section className="grid md:grid-cols-2 gap-12 items-center" style={{padding: '4.5rem 0 4rem'}}>
+              <div>
+                <div className="eyebrow mb-5" style={{animation: 'fadeInUp 0.5s both'}}>Free browser rhythm game</div>
+                <h1 className="display-font" style={{fontSize: 'clamp(2.4rem, 5.5vw, 4rem)', fontWeight: 900, lineHeight: 1.05, letterSpacing: '-1px', marginBottom: '1.25rem', animation: 'fadeInUp 0.5s both 0.05s'}}>
+                  Hit every beat.<br/>
+                  <span style={{color: '#ff006e'}}>Any song.</span>
+                </h1>
+                <p style={{fontSize: '1.05rem', color: 'rgba(255,255,255,0.55)', lineHeight: 1.6, maxWidth: '440px', marginBottom: '2rem', animation: 'fadeInUp 0.5s both 0.1s'}}>
+                  Play built-in tracks instantly or upload your own music — beat detection builds the chart for you. No download, no account, works on anything.
+                </p>
+                <div className="flex flex-wrap gap-3 mb-10" style={{animation: 'fadeInUp 0.5s both 0.15s'}}>
+                  <button className="cta-primary" onClick={() => scrollTo('upload')}>
+                    <Icon name="upload" size={18} /> Upload your track
                   </button>
-                ))}
+                  <button className="cta-ghost" onClick={() => scrollTo('songs')}>
+                    <Icon name="play" size={18} /> Play built-in songs
+                  </button>
+                </div>
+                <div className="flex gap-10" style={{animation: 'fadeInUp 0.5s both 0.2s'}}>
+                  {[
+                    { val: '9', label: 'Built-in tracks' },
+                    { val: '∞', label: 'Your MP3s' },
+                    { val: '16', label: 'Achievements' }
+                  ].map(st => (
+                    <div key={st.label}>
+                      <div className="display-font" style={{fontSize: '1.4rem', fontWeight: 700, lineHeight: 1}}>{st.val}</div>
+                      <div style={{fontSize: '0.7rem', color: 'rgba(255,255,255,0.35)', marginTop: '5px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px'}}>{st.label}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div style={{marginTop:'1.5rem',display:'flex',alignItems:'center',gap:'1rem'}}>
-                <div style={{flex:1,height:'1px',background:'rgba(255,255,255,0.05)'}}></div>
-                <a href="https://mp3juice.as/" target="_blank" rel="noopener noreferrer"
-                  style={{fontSize:'0.75rem',color:'rgba(255,255,255,0.3)',fontFamily:'Courier New, monospace',borderBottom:'1px solid rgba(255,255,255,0.1)',paddingBottom:'2px',transition:'all 0.2s'}}
-                  onMouseEnter={e => { e.target.style.color = '#ff006e'; e.target.style.borderColor = '#ff006e'; }}
-                  onMouseLeave={e => { e.target.style.color = 'rgba(255,255,255,0.3)'; e.target.style.borderColor = 'rgba(255,255,255,0.1)'; }}>
-                  Need MP3s? → mp3juice.as
-                </a>
-                <div style={{flex:1,height:'1px',background:'rgba(255,255,255,0.05)'}}></div>
+              <div className="hidden md:block" style={{animation: 'fadeInUp 0.6s both 0.15s'}}>
+                <GamePreview />
               </div>
-            </div>
-          </section>
-          
-          {/* ===== BUILT-IN SONGS ===== */}
-          <section className="px-6 sm:px-12 md:px-20 py-20 relative" style={{maxWidth:'1400px',margin:'0 auto'}}>
-            <div className="flex items-center gap-4 mb-12">
-              <div style={{flex:1,height:'1px',background:'linear-gradient(90deg, rgba(0,240,255,0.3), transparent)'}}></div>
-              <h2 style={{fontFamily:'Courier New, monospace',fontSize:'0.7rem',letterSpacing:'4px',color:'rgba(255,255,255,0.3)',textTransform:'uppercase'}}>02 // quick play</h2>
-              <div style={{flex:1,height:'1px',background:'linear-gradient(90deg, transparent, rgba(0,240,255,0.3)'}}></div>
-            </div>
-            
-            {/* Marquee of song names */}
-            <div className="marquee-track mb-8" style={{borderTop:'1px solid rgba(255,255,255,0.04)',borderBottom:'1px solid rgba(255,255,255,0.04)',padding:'10px 0'}}>
-              <div className="marquee-content">
-                {[...BUILT_IN_SONGS, ...BUILT_IN_SONGS].map((song, i) => {
+            </section>
+
+            {/* ===== DAILY CHALLENGE ===== */}
+            <section id="daily" style={{paddingBottom: '3.5rem'}}>
+              <button onClick={() => !dailyDone && onPlayDaily(daily)}
+                className="w-full text-left relative overflow-hidden rounded-2xl"
+                style={{
+                  border: `1px solid ${dailyDone ? 'rgba(34,197,94,0.3)' : dailyTheme.primary + '45'}`,
+                  background: `linear-gradient(120deg, ${dailyTheme.primary}10, rgba(255,255,255,0.02))`,
+                  padding: '1.4rem 1.6rem',
+                  cursor: dailyDone ? 'default' : 'pointer'
+                }}>
+                <div className="flex flex-wrap items-center gap-4">
+                  <span className="icon-tile" style={{background: dailyDone ? 'rgba(34,197,94,0.12)' : `${dailyTheme.primary}18`}}>
+                    <Icon name={dailyDone ? 'check' : 'target'} size={22} color={dailyDone ? '#22c55e' : dailyTheme.primary} />
+                  </span>
+                  <div className="flex-1 min-w-[220px]">
+                    <div className="eyebrow mb-1" style={{color: dailyDone ? '#22c55e' : dailyTheme.primary}}>
+                      {dailyDone ? 'Daily challenge complete' : 'Daily challenge · 2x XP'}
+                    </div>
+                    <div style={{fontSize: '1.15rem', fontWeight: 800}}>
+                      {daily.song.title} <span style={{fontSize: '0.8rem', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'capitalize'}}>· {daily.difficulty}</span>
+                    </div>
+                    <div style={{fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)'}}>
+                      {dailyDone ? `Come back tomorrow for a new one. Streak: ${profile.streak} day${profile.streak === 1 ? '' : 's'}` : 'One featured song per day. Double XP. Keep your streak alive.'}
+                    </div>
+                  </div>
+                  {!dailyDone && (
+                    <span className="cta-ghost" style={{padding: '10px 20px', fontSize: '0.85rem'}}>
+                      <Icon name="play" size={15} /> Play it
+                    </span>
+                  )}
+                </div>
+              </button>
+            </section>
+
+            {/* ===== UPLOAD ===== */}
+            <section id="upload" style={{paddingBottom: '3rem'}}>
+              <div className="rounded-3xl p-6 sm:p-8" style={{background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)'}}>
+                <div className="flex items-start gap-4 mb-6">
+                  <span className="icon-tile" style={{background: 'rgba(255,0,110,0.12)'}}>
+                    <Icon name="upload" size={22} color="#ff006e" />
+                  </span>
+                  <div>
+                    <div className="eyebrow mb-1">Your music</div>
+                    <h2 className="display-font" style={{fontSize: '1.5rem', fontWeight: 700, marginBottom: '4px'}}>Play any uploaded MP3</h2>
+                    <p style={{fontSize: '0.85rem', color: 'rgba(255,255,255,0.45)'}}>Pick a visual style, then upload an MP3 or WAV — beat detection builds the chart automatically. Files never leave your browser.</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {Object.entries(GENRE_THEMES).map(([key, genre]) => (
+                    <button key={key} onClick={() => onSelectGenre(key)}
+                      className="genre-chip" style={{'--chip-accent': genre.primary + '70'}}>
+                      <span className="icon-tile" style={{background: `${genre.primary}15`, width: '38px', height: '38px'}}>
+                        <Icon name={genre.icon} size={19} color={genre.primary} />
+                      </span>
+                      <span>
+                        <span style={{display: 'block', fontSize: '0.92rem', fontWeight: 700}}>{genre.name}</span>
+                        <span style={{display: 'block', fontSize: '0.68rem', color: 'rgba(255,255,255,0.35)'}}>{genre.description}</span>
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* ===== SONG LIBRARY ===== */}
+            <section id="songs" style={{paddingBottom: '3.5rem'}}>
+              <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
+                <div>
+                  <div className="eyebrow mb-2">Song library</div>
+                  <h2 className="display-font" style={{fontSize: '1.5rem', fontWeight: 700}}>Quick play</h2>
+                </div>
+                <div className="flex gap-1.5 p-1 rounded-xl" style={{background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)'}}>
+                  {['easy', 'medium', 'hard'].map(diff => (
+                    <button key={diff}
+                      onClick={() => onDifficultyChange(diff)}
+                      className="px-4 py-1.5 rounded-lg text-xs font-bold capitalize transition-all"
+                      style={difficulty === diff
+                        ? {background: '#ff006e', color: 'white'}
+                        : {color: 'rgba(255,255,255,0.45)'}}>
+                      {diff}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {BUILT_IN_SONGS.map((song) => {
                   const st = GENRE_THEMES[song.genre];
                   return (
-                    <span key={i} style={{marginRight:'3rem',fontSize:'0.7rem',letterSpacing:'3px',textTransform:'uppercase',color:'rgba(255,255,255,0.15)'}}>
-                      <span style={{color: st.primary, opacity: 0.6}}>{song.emoji}</span> {song.title} — {song.bpm}BPM
-                    </span>
+                    <button key={song.id} onClick={() => onSelectBuiltIn(song)}
+                      className="lib-card"
+                      style={{
+                        '--card-accent': st.primary + '80',
+                        '--card-glow': st.primary + '20',
+                        '--card-border': st.primary + '2E',
+                        '--card-bg': `linear-gradient(150deg, ${st.primary}12 0%, rgba(255,255,255,0.02) 60%)`
+                      }}>
+                      <span className="lib-play"><Icon name="play" size={16} /></span>
+                      <span className="icon-tile mb-3" style={{background: `${st.primary}15`}}>
+                        <Icon name={st.icon} size={22} color={st.primary} />
+                      </span>
+                      <div style={{fontSize: '1.05rem', fontWeight: 800, marginBottom: '2px'}}>{song.title}</div>
+                      <div style={{fontSize: '0.78rem', color: 'rgba(255,255,255,0.4)', marginBottom: '0.9rem'}}>{song.description}</div>
+                      <div className="flex items-center gap-2" style={{fontSize: '0.7rem', fontWeight: 700}}>
+                        <span className="px-2 py-1 rounded-md" style={{background: `${st.primary}15`, color: st.primary}}>{st.name}</span>
+                        <span className="px-2 py-1 rounded-md" style={{background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.45)'}}>{song.bpm} BPM</span>
+                        <span style={{color: 'rgba(255,255,255,0.3)', marginLeft: 'auto'}}>{formatDuration(song.duration)}</span>
+                      </div>
+                    </button>
                   );
                 })}
               </div>
+            </section>
+
+            <AdSlot slot="landingBanner" style={{margin: '0 0 2rem'}} />
+          </main>
+
+          {/* ===== FOOTER ===== */}
+          <footer style={{borderTop: '1px solid rgba(255,255,255,0.05)', padding: '2rem 1.25rem'}}>
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4" style={{maxWidth: '1200px', margin: '0 auto'}}>
+              <div className="flex items-center gap-2.5">
+                <Logo size={24} />
+                <span style={{fontSize: '0.75rem', color: 'rgba(255,255,255,0.3)', fontWeight: 600}}>ARROWFALL © 2026 · Scores saved locally</span>
+              </div>
+              <div className="flex gap-5">
+                <button onClick={() => onOpenInfo('howto')} className="nav-link" style={{fontSize: '0.75rem'}}>How to play</button>
+                <button onClick={() => onOpenInfo('privacy')} className="nav-link" style={{fontSize: '0.75rem'}}>Privacy policy</button>
+              </div>
             </div>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {BUILT_IN_SONGS.map((song, i) => {
-                const songTheme = GENRE_THEMES[song.genre];
-                const isHovered = hoveredSong === song.id;
-                return (
-                  <button
-                    key={song.id}
-                    onClick={() => onSelectBuiltIn(song)}
-                    onMouseEnter={() => setHoveredSong(song.id)}
-                    onMouseLeave={() => setHoveredSong(null)}
-                    className="song-tile text-left"
-                    style={{
-                      '--card-color': songTheme.primary,
-                      animationDelay: `${i * 0.08}s`,
-                      animation: 'fadeInUp 0.5s both',
-                      borderColor: isHovered ? songTheme.primary + '60' : undefined,
-                    }}
-                  >
-                    <div style={{position:'absolute',bottom:0,left:0,height:'2px',background: songTheme.primary,width: isHovered ? '100%' : '0',transition:'width 0.3s'}}></div>
-                    
-                    <div className="flex items-start justify-between mb-3">
-                      <div>
-                        <div style={{fontSize:'0.6rem',fontFamily:'Courier New, monospace',letterSpacing:'2px',color:'rgba(255,255,255,0.2)',marginBottom:'4px'}}>
-                          {String(i + 1).padStart(2, '0')} // {songTheme.name.toLowerCase()}
-                        </div>
-                        <div style={{fontSize:'1.1rem',fontWeight:800,color:'white',letterSpacing:'-0.5px'}}>
-                          {song.title}
-                        </div>
-                      </div>
-                      <div style={{fontSize:'1.8rem',transition:'transform 0.2s',transform: isHovered ? 'scale(1.2) rotate(-5deg)' : 'scale(1)',filter:`drop-shadow(0 0 ${isHovered ? '12px' : '4px'} ${songTheme.glow})`}}>
-                        {song.emoji}
-                      </div>
-                    </div>
-                    
-                    <div style={{fontSize:'0.75rem',color:'rgba(255,255,255,0.35)',marginBottom:'0.75rem'}}>{song.description}</div>
-                    
-                    <div className="flex items-center gap-3">
-                      <span style={{fontSize:'0.65rem',fontFamily:'Courier New, monospace',padding:'3px 8px',border:`1px solid ${songTheme.primary}40`,color:songTheme.primary,letterSpacing:'1px'}}>
-                        {song.bpm} BPM
-                      </span>
-                      <span style={{fontSize:'0.65rem',fontFamily:'Courier New, monospace',color:'rgba(255,255,255,0.2)'}}>
-                        {formatDuration(song.duration)}
-                      </span>
-                      <span style={{marginLeft:'auto',fontSize:'0.8rem',color: isHovered ? '#ff006e' : 'rgba(255,255,255,0.15)',transition:'color 0.2s',fontWeight:700}}>
-                        →
-                      </span>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </section>
-          
-          {/* ===== BOTTOM BAR ===== */}
-          <div style={{borderTop:'1px solid rgba(255,255,255,0.04)',padding:'2rem 0',marginTop:'2rem'}}>
-            <div className="flex flex-wrap justify-center gap-8 px-6" style={{maxWidth:'1400px',margin:'0 auto'}}>
-              {[
-                'INSTANT PLAY',
-                'BEAT DETECTION',
-                'UPLOAD ANY SONG',
-                'MOBILE READY',
-                'HIGH SCORES',
-                'NO DOWNLOAD'
-              ].map((f, i) => (
-                <span key={f} style={{fontSize:'0.6rem',fontFamily:'Courier New, monospace',letterSpacing:'3px',color:'rgba(255,255,255,0.15)'}}>
-                  {f}
-                </span>
-              ))}
-            </div>
-            <div style={{textAlign:'center',marginTop:'1.5rem',fontSize:'0.6rem',fontFamily:'Courier New, monospace',color:'rgba(255,255,255,0.08)',letterSpacing:'2px'}}>
-              ARROWFALL © 2025
-            </div>
-          </div>
+          </footer>
         </div>
       );
     };
@@ -1942,6 +2635,12 @@
       const [isNewBest, setIsNewBest] = useState(false);
       const [analyzeProgress, setAnalyzeProgress] = useState(0);
       const [selectedBuiltInSong, setSelectedBuiltInSong] = useState(null);
+      const [isPaused, setIsPaused] = useState(false);
+      const [statsOpen, setStatsOpen] = useState(false);
+      const [infoPage, setInfoPage] = useState(null);
+      const [toasts, setToasts] = useState([]);
+      const [xpResult, setXpResult] = useState(null);
+      const [adBreakActive, setAdBreakActive] = useState(false);
       
       const audioRef = useRef(null);
       const audioStartTimeRef = useRef(0);
@@ -1950,10 +2649,21 @@
       const sustainTickRef = useRef({});
       const lastMilestoneRef = useRef(0);
       const analysisDataRef = useRef(null); // stores beats/energies for difficulty changes
+      const isPausedRef = useRef(false);
+      const audioPendingRef = useRef(false);
+      const isDailyRunRef = useRef(false);
+      const playsSinceBreakRef = useRef(0);
+      const toastTimeoutsRef = useRef([]);
       
       const theme = useMemo(() => selectedGenre ? GENRE_THEMES[selectedGenre] : GENRE_THEMES.pop, [selectedGenre]);
       const noteSpeed = GAME_CONFIG.NOTE_SPEED;
-      const laneIcons = gameSettings.keyLayout === 'wasd' ? LANE_ICONS_WASD : LANE_ICONS_ARROWS;
+      const laneIcons = useMemo(() => {
+        const wasd = gameSettings.keyLayout === 'wasd';
+        const letters = { left: 'A', down: 'S', up: 'W', right: 'D' };
+        const out = {};
+        LANES.forEach(l => { out[l] = <LaneIcon dir={l} label={wasd ? letters[l] : null} />; });
+        return out;
+      }, [gameSettings.keyLayout]);
 
       const clearEffectTimeouts = useCallback(() => {
         effectTimeoutsRef.current.forEach(clearTimeout);
@@ -2033,8 +2743,19 @@
         }
       }, []);
 
+      // ---- Achievement toasts ----
+      const pushToast = useCallback((ach) => {
+        const key = `${ach.id}-${Date.now()}`;
+        setToasts(prev => [...prev, { ...ach, key }]);
+        const t = setTimeout(() => setToasts(prev => prev.filter(x => x.key !== key)), 4500);
+        toastTimeoutsRef.current.push(t);
+      }, []);
+
       // ---- Built-in song selection ----
-      const handleBuiltInSongSelect = useCallback(async (song) => {
+      const handleBuiltInSongSelect = useCallback(async (song, diffOverride = null, isDaily = false) => {
+        const effectiveDifficulty = diffOverride || difficulty;
+        if (diffOverride) setDifficulty(diffOverride);
+        isDailyRunRef.current = isDaily;
         setSelectedGenre(song.genre);
         setSelectedBuiltInSong(song);
         setIsGenerating(true);
@@ -2048,7 +2769,7 @@
           audioRef.current = audio;
 
           analysisDataRef.current = { beats: result.beats, beatEnergies: result.beatEnergies };
-          const generatedNotes = NoteGenerator.generate(result.beats, result.beatEnergies, difficulty);
+          const generatedNotes = NoteGenerator.generate(result.beats, result.beatEnergies, effectiveDifficulty);
 
           setSongData({
             duration: result.duration,
@@ -2077,6 +2798,7 @@
         
         setIsAnalyzing(true);
         setAnalyzeProgress(0);
+        isDailyRunRef.current = false;
         setScore(0); setCombo(0); setMaxCombo(0); setCurrentTime(0);
         setStats({ perfect: 0, good: 0, ok: 0, miss: 0 });
         
@@ -2169,14 +2891,21 @@
         if (elapsedTime >= songData.duration + GAME_CONFIG.START_DELAY) finishGame();
       }, [songData]);
 
-      useGameLoop(isPlaying, onGameTick);
+      useGameLoop(isPlaying, isPaused, onGameTick);
 
       const finishGame = useCallback(() => {
         setIsPlaying(false);
-        setShowResults(true);
+        setIsPaused(false);
+        isPausedRef.current = false;
         if (audioRef.current) audioRef.current.pause();
         clearEffectTimeouts();
         heldKeysRef.current.clear();
+
+        // Ad break every Nth completed song (only when ads are live)
+        playsSinceBreakRef.current += 1;
+        const needBreak = AD_CONFIG.enabled && playsSinceBreakRef.current >= AD_CONFIG.adBreakEverySongs;
+        if (needBreak) { playsSinceBreakRef.current = 0; setAdBreakActive(true); }
+        else setShowResults(true);
         
         setTimeout(() => {
           const totalHits = stats.perfect + stats.good + stats.ok + stats.miss;
@@ -2194,14 +2923,66 @@
             difficulty,
             genre: selectedGenre
           });
+
+          // ---- Profile, XP, streaks, achievements ----
+          const isDaily = isDailyRunRef.current;
+          const isCustom = !selectedBuiltInSong;
+          const isFullCombo = totalHits >= 10 && stats.miss === 0;
+          const profile = Profile.get();
+
+          profile.songsPlayed += 1;
+          profile.totalNotes += stats.perfect + stats.good + stats.ok;
+          profile.totalPerfect += stats.perfect;
+          profile.bestCombo = Math.max(profile.bestCombo, maxCombo);
+          profile.bestScore = Math.max(profile.bestScore, Math.round(score));
+          if (isCustom) profile.customSongsPlayed += 1;
+          if (selectedBuiltInSong && !profile.playedSongIds.includes(selectedBuiltInSong.id)) {
+            profile.playedSongIds.push(selectedBuiltInSong.id);
+          }
+
+          // Daily play streak
+          const today = Profile.todayKey();
+          if (profile.lastPlayDate !== today) {
+            profile.streak = profile.lastPlayDate === Profile.yesterdayKey() ? profile.streak + 1 : 1;
+            profile.lastPlayDate = today;
+          }
+          if (isDaily) profile.dailyDoneDate = today;
+
+          // XP: score-based + grade bonus + full combo bonus, doubled on dailies
+          const gradeBonus = { 'S+': 300, 'S': 200, 'A': 120, 'B': 80, 'C': 50, 'D': 25, 'F': 10 }[grade.letter] || 10;
+          let xpEarned = Math.min(5000, Math.round(score / 100) + gradeBonus + (isFullCombo ? 100 : 0));
+          if (isDaily) xpEarned *= 2;
+
+          const prevLevel = levelFromXP(profile.xp).level;
+          profile.xp += xpEarned;
+          const newLvl = levelFromXP(profile.xp);
+
+          // Achievements
+          const run = { maxCombo, grade: grade.letter, totalNotes: totalHits, miss: stats.miss, difficulty, score: Math.round(score), isCustom, isDaily };
+          const newAchievements = checkAchievements(profile, run);
+          profile.achievements = [...profile.achievements, ...newAchievements.map(a => a.id)];
+
+          Profile.save(profile);
+
+          setXpResult({
+            xpEarned, level: newLvl.level, intoLevel: newLvl.intoLevel,
+            needed: newLvl.needed, leveledUp: newLvl.level > prevLevel, isDaily
+          });
+
+          newAchievements.forEach((a, i) => {
+            const t = setTimeout(() => pushToast(a), 800 + i * 700);
+            toastTimeoutsRef.current.push(t);
+          });
         }, 100);
-      }, [clearEffectTimeouts, stats, score, maxCombo, songData, difficulty, selectedGenre]);
+      }, [clearEffectTimeouts, stats, score, maxCombo, songData, difficulty, selectedGenre, selectedBuiltInSong, pushToast]);
 
       const startGame = useCallback(() => {
         if (!audioRef.current || !songData) return;
         
         setIsPlaying(true); setShowResults(false); setScore(0); setCombo(0);
         setMaxCombo(0); setCurrentTime(0); setIsNewBest(false);
+        setIsPaused(false); isPausedRef.current = false; audioPendingRef.current = false;
+        setXpResult(null);
         setStats({ perfect: 0, good: 0, ok: 0, miss: 0 });
         clearEffectTimeouts();
         setParticles([]); setHitBursts([]); setPerfectRings([]); setStarBursts([]);
@@ -2222,6 +3003,7 @@
         
         setTimeout(() => {
           if (audioRef.current) {
+            if (isPausedRef.current) { audioPendingRef.current = true; return; }
             audioRef.current.currentTime = 0;
             audioRef.current.play()
               .then(() => { audioStartTimeRef.current = performance.now(); })
@@ -2232,13 +3014,41 @@
 
       const stopGame = useCallback(() => {
         setIsPlaying(false); setCountdown(null);
+        setIsPaused(false); isPausedRef.current = false;
         if (audioRef.current) audioRef.current.pause();
         clearEffectTimeouts(); heldKeysRef.current.clear();
       }, [clearEffectTimeouts]);
 
+      // ---- Pause / resume ----
+      const togglePause = useCallback(() => {
+        setIsPaused(prev => {
+          const next = !prev;
+          isPausedRef.current = next;
+          if (next) {
+            if (audioRef.current) audioRef.current.pause();
+          } else {
+            if (audioPendingRef.current && audioRef.current) {
+              audioPendingRef.current = false;
+              audioRef.current.currentTime = 0;
+              audioRef.current.play().catch(() => {});
+            } else if (audioRef.current && audioRef.current.currentTime > 0) {
+              audioRef.current.play().catch(() => {});
+            }
+          }
+          return next;
+        });
+      }, []);
+
+      const restartFromPause = useCallback(() => {
+        setIsPaused(false); isPausedRef.current = false;
+        setIsPlaying(false);
+        if (audioRef.current) audioRef.current.pause();
+        setTimeout(() => startGame(), 60);
+      }, [startGame]);
+
       // ---- Lane press ----
       const handleLanePress = useCallback((lane) => {
-        if (!isPlaying) return;
+        if (!isPlaying || isPausedRef.current) return;
         const currentGameTime = currentTime;
         
         const hittableNotes = notes.filter(note =>
@@ -2319,9 +3129,20 @@
         return () => { window.removeEventListener('keydown', handleKeyDown); window.removeEventListener('keyup', handleKeyUp); };
       }, [handleLanePress, handleLaneRelease]);
 
+      // ESC = pause/resume
+      useEffect(() => {
+        const handleEsc = (e) => {
+          if (e.key !== 'Escape') return;
+          if (isPlaying && countdown === null && !showResults) togglePause();
+        };
+        window.addEventListener('keydown', handleEsc);
+        return () => window.removeEventListener('keydown', handleEsc);
+      }, [isPlaying, countdown, showResults, togglePause]);
+
       useEffect(() => {
         return () => {
           clearEffectTimeouts();
+          toastTimeoutsRef.current.forEach(clearTimeout);
           if (audioRef.current) { audioRef.current.pause(); audioRef.current.src = ''; }
         };
       }, [clearEffectTimeouts]);
@@ -2345,6 +3166,9 @@
         setSelectedBuiltInSong(null);
         setSongData(null);
         setNotes([]);
+        setShowResults(false);
+        setXpResult(null);
+        isDailyRunRef.current = false;
         analysisDataRef.current = null;
       };
 
@@ -2355,12 +3179,18 @@
             <LandingPage
               onSelectGenre={(g) => setSelectedGenre(g)}
               onSelectBuiltIn={handleBuiltInSongSelect}
+              onPlayDaily={(daily) => handleBuiltInSongSelect(daily.song, daily.difficulty, true)}
+              onOpenStats={() => setStatsOpen(true)}
+              onOpenInfo={(page) => setInfoPage(page)}
               difficulty={difficulty}
               onDifficultyChange={setDifficulty}
               theme={theme}
               onOpenSettings={() => setSettingsOpen(true)}
             />
             <SettingsPanel isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} settings={gameSettings} onUpdate={setGameSettings} theme={theme} />
+            <StatsModal isOpen={statsOpen} onClose={() => setStatsOpen(false)} theme={theme} />
+            <InfoModal page={infoPage} onClose={() => setInfoPage(null)} theme={theme} />
+            <AchievementToasts toasts={toasts} theme={theme} />
           </>
         );
       }
@@ -2385,21 +3215,27 @@
               </button>
               
               <div className="flex items-center gap-3">
-                <span className="text-2xl" style={{filter: `drop-shadow(0 0 8px ${theme.glow})`}}>{theme.emoji}</span>
+                <Logo size={30} />
                 <div>
-                  <h1 className="text-xl font-black tracking-tight">Arrowfall</h1>
+                  <h1 className="text-lg font-black tracking-tight display-font">ARROWFALL</h1>
                   <p className="text-[10px] text-neutral-500 font-semibold uppercase tracking-wider">{theme.name} Mode</p>
                 </div>
               </div>
               
-              <button onClick={() => setSettingsOpen(true)}
-                className="btn btn-secondary px-3 py-2 rounded-xl text-sm" title="Settings">⚙️</button>
+              <div className="flex items-center gap-2">
+                {isPlaying && countdown === null && (
+                  <button onClick={togglePause}
+                    className="btn btn-secondary px-3 py-2 rounded-xl text-sm" title="Pause (ESC)"><Icon name={isPaused ? 'play' : 'pause'} size={15} /></button>
+                )}
+                <button onClick={() => setSettingsOpen(true)}
+                  className="btn btn-secondary px-3 py-2 rounded-xl text-sm" title="Settings"><Icon name="settings" size={16} /></button>
+              </div>
             </div>
 
             {/* ---- Generating built-in song ---- */}
             {!songData && isGenerating && (
               <div className="max-w-xl mx-auto animate-slide-up text-center py-20">
-                <div className="text-6xl mb-5 animate-pulse-slow">{selectedBuiltInSong?.emoji || theme.emoji}</div>
+                <div className="mb-5 animate-pulse-slow flex justify-center"><span className="icon-tile" style={{width: 72, height: 72, background: `${theme.primary}15`}}><Icon name={theme.icon} size={36} color={theme.primary} /></span></div>
                 <p className="text-xl font-bold mb-2" style={{color: theme.primary}}>Generating "{selectedBuiltInSong?.title}"</p>
                 <p className="text-sm text-neutral-500 mb-6">Creating beats & synthesizing audio...</p>
                 <div className="w-64 mx-auto h-2 bg-neutral-800 rounded-full overflow-hidden">
@@ -2438,7 +3274,7 @@
                   style={{borderColor: isAnalyzing ? theme.primary : undefined}}>
                   {isAnalyzing ? (
                     <div className="py-6">
-                      <div className="text-5xl mb-4 animate-pulse-slow">{theme.emoji}</div>
+                      <div className="mb-4 animate-pulse-slow flex justify-center"><span className="icon-tile" style={{width: 64, height: 64, background: `${theme.primary}15`}}><Icon name={theme.icon} size={32} color={theme.primary} /></span></div>
                       <p className="text-lg font-bold mb-2">Analyzing your track...</p>
                       <p className="text-sm text-neutral-500 mb-5">Detecting beats & generating patterns</p>
                       <div className="w-56 mx-auto h-2 bg-neutral-800 rounded-full overflow-hidden">
@@ -2451,7 +3287,7 @@
                     <div className="py-6">
                       <div className="w-20 h-20 mx-auto mb-5 rounded-2xl flex items-center justify-center text-4xl transition-all group-hover:scale-110 group-hover:shadow-lg"
                         style={{background: `${theme.primary}15`, boxShadow: `0 0 0 1px ${theme.primary}20`}}>
-                        🎵
+                        <Icon name="music" size={34} color={theme.primary} />
                       </div>
                       <p className="text-xl font-bold mb-1">Drop your track here</p>
                       <p className="text-sm text-neutral-500 mb-4">or click to browse</p>
@@ -2467,16 +3303,7 @@
                   Your music is analyzed to create perfectly synchronized beatmaps
                 </p>
 
-                {/* MP3 Juice Link */}
-                <div className="mt-5 text-center">
-                  <a href="https://mp3juice.as/" target="_blank" rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06] text-sm hover:bg-white/[0.06] hover:border-white/[0.12] transition-all group">
-                    <span className="text-lg">🎵</span>
-                    <span className="text-neutral-400 group-hover:text-neutral-200 transition-colors">Need free MP3s?</span>
-                    <span className="font-bold transition-colors" style={{color: theme.primary}}>MP3Juice →</span>
-                  </a>
-                </div>
-                
+
                 {/* Best scores */}
                 {(() => {
                   const topScores = HighScores.getTopN(3);
@@ -2569,14 +3396,14 @@
                           <button onClick={startGame}
                             className="btn px-7 py-2.5 rounded-xl font-bold text-white"
                             style={{background: `linear-gradient(135deg, ${theme.primary}, ${theme.secondary})`, boxShadow: `0 4px 20px ${theme.glow}`}}>
-                            ▶ Play
+                            <Icon name="play" size={15} style={{marginRight: 8}} />Play
                           </button>
                         </>
                       ) : (
-                        <button onClick={stopGame} className="btn px-6 py-2.5 rounded-xl font-bold bg-red-600 text-white hover:bg-red-500">⏹ Stop</button>
+                        <button onClick={stopGame} className="btn px-6 py-2.5 rounded-xl font-bold bg-red-600 text-white hover:bg-red-500"><Icon name="stop" size={14} style={{marginRight: 8}} />Stop</button>
                       )}
                       <button onClick={() => { stopGame(); setSongData(null); setNotes([]); analysisDataRef.current = null; setSelectedBuiltInSong(null); }}
-                        className="btn btn-secondary px-4 py-2.5 rounded-xl" title="New Song">↻</button>
+                        className="btn btn-secondary px-4 py-2.5 rounded-xl" title="New Song"><Icon name="restart" size={16} /></button>
                     </div>
                   </div>
                 </div>
@@ -2602,6 +3429,9 @@
                   
                   <div className="absolute inset-0 pointer-events-none z-10"
                     style={{background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.4) 100%)'}}></div>
+                  
+                  {/* Judgment line — floats just above the receptor row, like the homepage preview */}
+                  <div className="hit-beam" style={{bottom: '106px', '--beam-color': theme.primary, '--beam-glow': theme.glow}}></div>
                   
                   {/* Lanes */}
                   <div className="relative h-full flex">
@@ -2637,7 +3467,8 @@
                               : hitFeedback[lane].accuracy === 'good' ? '#34d399'
                               : hitFeedback[lane].accuracy === 'ok' ? '#60a5fa'
                               : undefined
-                              : 'rgba(255,255,255,0.04)'
+                              : 'rgba(255,255,255,0.04)',
+                            borderColor: !(hitFeedback[lane] && Date.now() - hitFeedback[lane].time < 200) ? `${theme.primary}40` : undefined
                           }}>
                             {laneIcons[lane]}
                           </div>
@@ -2693,11 +3524,14 @@
                                   </div>
                                   
                                   {!note.hit && (
-                                    <div className={`w-14 h-14 bg-gradient-to-br ${theme.noteGradient} rounded-xl flex items-center justify-center text-3xl font-black border-2 transition-all duration-75 ${theme.borderColor}`}
-                                      style={{
-                                        boxShadow: isApproaching ? `0 0 24px ${theme.glow}` : `0 0 10px ${theme.glow}`,
-                                        transform: isApproaching ? 'scale(1.1)' : 'scale(1)'
-                                      }}>{laneIcons[lane]}</div>
+                                    <React.Fragment>
+                                      <div className={`w-14 h-14 bg-gradient-to-br ${theme.noteGradient} rounded-xl flex items-center justify-center text-3xl font-black border-2 transition-all duration-75 ${theme.borderColor}`}
+                                        style={{
+                                          boxShadow: isApproaching ? `0 0 24px ${theme.glow}` : `0 0 10px ${theme.glow}`,
+                                          transform: isApproaching ? 'scale(1.1)' : 'scale(1)'
+                                        }}>{laneIcons[lane]}</div>
+                                      <div className="absolute left-1/2 -translate-x-1/2 transform" style={{top: '58px', fontSize: '0.55rem', fontWeight: 800, letterSpacing: '1.5px', color: 'white', textShadow: `0 0 6px ${theme.glow}, 0 1px 3px rgba(0,0,0,0.9)`, whiteSpace: 'nowrap'}}>HOLD</div>
+                                    </React.Fragment>
                                   )}
                                   
                                   <div className="absolute left-1/2 transform -translate-x-1/2"
@@ -2772,7 +3606,7 @@
                           }} />
                         </div>
                       )}
-                      <div className={`text-4xl font-black ${combo % 10 === 0 ? 'combo-bounce' : ''}`}
+                      <div className={`text-3xl font-bold display-font ${combo % 10 === 0 ? 'combo-bounce' : ''}`}
                         style={{
                           color: combo >= 100 ? '#ef4444' : combo >= 50 ? '#f97316' : '#fbbf24',
                           textShadow: '0 0 20px currentColor, 0 0 40px currentColor'
@@ -2782,7 +3616,7 @@
                           color: combo >= 100 ? '#ef4444' : combo >= 50 ? '#f97316' : '#fbbf24',
                           textShadow: '0 0 10px currentColor'
                         }}>
-                          {combo >= 500 ? '👑 GODLIKE!' : combo >= 200 ? '🌟 LEGENDARY!' : combo >= 100 ? '💫 UNSTOPPABLE!' : combo >= 50 ? '🔥 ON FIRE!' : '⚡ STREAK!'}
+                          {combo >= 500 ? 'GODLIKE' : combo >= 200 ? 'LEGENDARY' : combo >= 100 ? 'UNSTOPPABLE' : combo >= 50 ? 'ON FIRE' : 'STREAK'}
                         </div>
                       )}
                     </div>
@@ -2793,7 +3627,7 @@
                   {/* Countdown */}
                   {countdown !== null && (
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-40">
-                      <div className="text-9xl font-black"
+                      <div className="text-8xl font-black display-font"
                         style={{
                           color: countdown === 'GO!' ? '#22c55e' : theme.primary,
                           textShadow: `0 0 60px ${countdown === 'GO!' ? 'rgba(34,197,94,0.8)' : theme.glow}, 0 0 120px ${countdown === 'GO!' ? 'rgba(34,197,94,0.4)' : theme.glow}`,
@@ -2823,11 +3657,21 @@
                     </div>
                   )}
 
+                  {/* Pause overlay */}
+                  {isPaused && (
+                    <PauseOverlay
+                      theme={theme}
+                      onResume={togglePause}
+                      onRestart={restartFromPause}
+                      onQuit={() => { setIsPaused(false); isPausedRef.current = false; handleGoBack(); }}
+                    />
+                  )}
+
                   {/* Results */}
                   {showResults && (
                     <ResultsScreen
                       score={score} stats={stats} maxCombo={maxCombo} accuracy={accuracy}
-                      songData={songData} theme={theme} isNewBest={isNewBest}
+                      songData={songData} theme={theme} isNewBest={isNewBest} xpResult={xpResult}
                       onPlayAgain={() => { setShowResults(false); startGame(); }}
                       onNewSong={handleGoBack}
                     />
@@ -2838,6 +3682,8 @@
           </div>
           
           <SettingsPanel isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} settings={gameSettings} onUpdate={setGameSettings} theme={theme} />
+          {adBreakActive && <AdBreak theme={theme} onContinue={() => { setAdBreakActive(false); setShowResults(true); }} />}
+          <AchievementToasts toasts={toasts} theme={theme} />
         </div>
       );
     };
